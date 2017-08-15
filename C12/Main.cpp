@@ -3,11 +3,13 @@
 
 #include "stdafx.h"
 #include "C12.h"
+#include "DXApp.h"
 
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE g_hInstance;                                // current instance
+DXApp * g_App;
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
@@ -30,6 +32,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_C12, szWindowClass, MAX_LOADSTRING);
     RegisterClass(hInstance);
+
+	g_App = new DXApp();
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -96,7 +100,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    g_hInstance = hInstance; // Store instance handle in our global variable
 
-   RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
+   RECT windowRect = { 0, 0, static_cast<LONG>(g_App->m_width), static_cast<LONG>(g_App->m_height) };
    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
@@ -150,6 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+		delete g_App;
         PostQuitMessage(0);
         break;
     default:
