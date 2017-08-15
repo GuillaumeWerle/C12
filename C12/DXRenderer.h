@@ -1,10 +1,10 @@
+// 15.08.2017
 #pragma once
+
+
 class DXRenderer
 {
 public:
-
-	void Init();
-
 	DXRenderer();
 	~DXRenderer();
 };

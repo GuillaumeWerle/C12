@@ -9,7 +9,7 @@
 
 // Global Variables:
 HINSTANCE g_hInstance;                                // current instance
-DXApp * g_App;
+DXApp * g_App = nullptr;
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
@@ -111,6 +111,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   g_App->Init(hWnd);
+
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -146,13 +148,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
+		if (g_App)
+		{
+			g_App->Update();
+			g_App->Render();
+		}
+		return 0;
     case WM_DESTROY:
 		delete g_App;
         PostQuitMessage(0);

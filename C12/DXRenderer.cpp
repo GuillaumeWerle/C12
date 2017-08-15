@@ -6,12 +6,6 @@ DXRenderer::DXRenderer()
 {
 }
 
-
 DXRenderer::~DXRenderer()
 {
-}
-
-void DXRenderer::Init()
-{
-
 }
