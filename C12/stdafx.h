@@ -8,8 +8,10 @@
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
+// Windows Header Files
 #include <windows.h>
+#include <wrl.h>
+#include <shellapi.h>
 
 // C RunTime Header Files
 #include <stdlib.h>
@@ -22,11 +24,12 @@
 #include <dxgi1_4.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
+
+
 #include "d3dx12.h"
-#include <wrl.h>
-#include <shellapi.h>
 
 using Microsoft::WRL::ComPtr;
+using namespace DirectX;
 
 // TODO: reference additional headers your program requires here
 #include <stdint.h>

@@ -3,6 +3,7 @@
 #include "DXRenderer.h"
 #include "DXDescriptorHeap.h"
 #include "DXFence.h"
+#include "DXRenderer.h"
 
 ID3D12Device * g_device = nullptr;
 
@@ -13,6 +14,8 @@ DXApp::DXApp()
 
 DXApp::~DXApp()
 {
+	delete m_renderer;
+
 	for (size_t i = 0; i < m_descriptorHeaps.size(); i++)
 	{
 		delete m_descriptorHeaps[i];
@@ -124,16 +127,19 @@ void DXApp::Init(HWND hWnd)
 	// Create a RTV for each frame.
 	for (UINT n = 0; n < k_FrameCount; n++)
 	{
-		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n]));
-		m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
+		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_swapChainBuffers[n]));
+		m_device->CreateRenderTargetView(m_swapChainBuffers[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
 	}
 
-	m_fence.reset(new DXFence);
+	m_fence = std::make_unique<DXFence>();
 	m_fence->Init(m_fenceValue);
 
 	m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
 	m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList));
 	m_commandList->Close();
+
+	m_renderer = new DXRenderer;
+	m_renderer->Init();
 }
 
 void DXApp::InitDebugLayer()
@@ -163,24 +169,34 @@ void DXApp::Render()
 		return;
 
 	m_commandAllocator->Reset();
-
-	// However, when ExecuteCommandList() is called on a particular command 
-	// list, that command list can then be reset at any time and must be before 
-	// re-recording.
 	m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get());
 
 	// Indicate that the back buffer will be used as a render target.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_rtvDescriptorSize);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainBuffersDescriptorHeap->GetCpuHandle(m_frameIndex);
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	// Set necessary state.
+	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
+
+	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
+	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
+
+	m_commandList->RSSetViewports(1, &viewport);
+	m_commandList->RSSetScissorRects(1, &scissorRect);
+
+	m_commandList->SetPipelineState(m_renderer->m_pso.Get());
+	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_commandList->IASetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
+	m_commandList->DrawInstanced(3, 1, 0, 0);
+
 
 	// Indicate that the back buffer will now be used to present.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 	m_commandList->Close();
 

@@ -3,6 +3,7 @@
 class DXRenderer;
 class DXDescriptorHeap;
 class DXFence;
+class DXRenderer;
 
 class DXApp
 {
@@ -30,8 +31,7 @@ private:
 	ComPtr<ID3D12Device> m_device;
 
 	ComPtr<IDXGISwapChain3> m_swapChain;
-	ComPtr<ID3D12Resource> m_renderTargets[k_FrameCount];
-	//ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+	ComPtr<ID3D12Resource> m_swapChainBuffers[k_FrameCount];
 
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
@@ -42,6 +42,9 @@ private:
 	u32 m_frameIndex;
 	std::unique_ptr<DXFence> m_fence;
 	u64 m_fenceValue = 0;
+
+	// Render
+	DXRenderer* m_renderer;
 
 };
 

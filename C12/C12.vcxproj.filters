@@ -5,6 +5,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{114ba8e3-916a-42dc-b876-95df1d49194f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -20,6 +23,11 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="DXDescriptorHeap.h" />
     <ClInclude Include="DXFence.h" />
+    <ClInclude Include="DXShaderCompiler.h" />
+    <ClInclude Include="DXShader.h" />
+    <ClInclude Include="data\shaders\basic.hlsl">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -28,6 +36,8 @@
     <ClCompile Include="DXRenderer.cpp" />
     <ClCompile Include="DXDescriptorHeap.cpp" />
     <ClCompile Include="DXFence.cpp" />
+    <ClCompile Include="DXShaderCompiler.cpp" />
+    <ClCompile Include="DXShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">
