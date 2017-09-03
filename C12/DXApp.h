@@ -1,4 +1,5 @@
 #pragma once
+#include "DXResourceContext.h"
 
 class DXRenderer;
 class DXDescriptorHeap;
@@ -8,7 +9,7 @@ class DXRenderer;
 class DXApp
 {
 public:
-	static const u32 k_FrameCount = 2;
+	static const u32 k_RenderLatency = 2;
 	uint32_t m_width = 1920;
 	uint32_t m_height = 1080;
 
@@ -23,17 +24,18 @@ private:
 
 	void InitDebugLayer();
 
-	std::array<DXDescriptorHeap*, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorHeaps;
 	DXDescriptorHeap* m_swapChainBuffersDescriptorHeap = nullptr;
+	DXResourceContext m_resourceContexts[k_RenderLatency];
+	DXResourceContext * m_rc;
 
 	u32 m_dxgiFactoryFlags;
 	ComPtr<IDXGIFactory4> m_dxgiFactory;
 	ComPtr<ID3D12Device> m_device;
 
 	ComPtr<IDXGISwapChain3> m_swapChain;
-	ComPtr<ID3D12Resource> m_swapChainBuffers[k_FrameCount];
+	ComPtr<ID3D12Resource> m_swapChainBuffers[k_RenderLatency];
 
-	ComPtr<ID3D12PipelineState> m_pipelineState;
+	ComPtr<ID3D12PipelineState> m_psoNull;
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;

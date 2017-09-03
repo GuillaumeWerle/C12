@@ -28,6 +28,10 @@
     <ClInclude Include="data\shaders\basic.hlsl">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="DXBuffer.h" />
+    <ClInclude Include="DXHelpers.h" />
+    <ClInclude Include="DXResourceContext.h" />
+    <ClInclude Include="DXTexture2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -38,6 +42,10 @@
     <ClCompile Include="DXFence.cpp" />
     <ClCompile Include="DXShaderCompiler.cpp" />
     <ClCompile Include="DXShader.cpp" />
+    <ClCompile Include="DXBuffer.cpp" />
+    <ClCompile Include="DXHelpers.cpp" />
+    <ClCompile Include="DXResourceContext.cpp" />
+    <ClCompile Include="DXTexture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

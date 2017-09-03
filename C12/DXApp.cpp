@@ -4,22 +4,18 @@
 #include "DXDescriptorHeap.h"
 #include "DXFence.h"
 #include "DXRenderer.h"
+#include "DXBuffer.h"
 
 ID3D12Device * g_device = nullptr;
 
 DXApp::DXApp()
 {
-	m_descriptorHeaps.assign(nullptr);
 }
 
 DXApp::~DXApp()
 {
 	delete m_renderer;
 
-	for (size_t i = 0; i < m_descriptorHeaps.size(); i++)
-	{
-		delete m_descriptorHeaps[i];
-	}
 	delete m_swapChainBuffersDescriptorHeap;
 }
 
@@ -77,30 +73,33 @@ void DXApp::Init(HWND hWnd)
 
 	u32 heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES] = {};
 	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV] = 16384;
-	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER] = 64;
+	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER] = 256;
 	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_RTV] = 4096;
 	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_DSV] = 4096;
 
-	for (u32 i = 0; i < _countof(heapSizes); i++)
+	for (auto & res : m_resourceContexts)
 	{
-		assert(heapSizes[i]);
-		m_descriptorHeaps[i] = new DXDescriptorHeap;
+		for (u32 i = 0; i < _countof(heapSizes); i++)
+		{
+			assert(heapSizes[i]);
+			res.m_descriptorHeaps[i] = new DXDescriptorHeap;
 
-		D3D12_DESCRIPTOR_HEAP_FLAGS flags;
-		if (i == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || i == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
-			flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		else
-			flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			D3D12_DESCRIPTOR_HEAP_FLAGS flags;
+			if (i == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || i == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
+				flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			else
+				flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
-		m_descriptorHeaps[i]->Init((D3D12_DESCRIPTOR_HEAP_TYPE)i, heapSizes[i], flags);
+			res.m_descriptorHeaps[i]->Init((D3D12_DESCRIPTOR_HEAP_TYPE)i, heapSizes[i], flags);
+		}
 	}
 
 	m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
-	m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_FrameCount, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.BufferCount = k_FrameCount;
+	swapChainDesc.BufferCount = k_RenderLatency;
 	swapChainDesc.Width = m_width;
 	swapChainDesc.Height = m_height;
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -125,7 +124,7 @@ void DXApp::Init(HWND hWnd)
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
 	// Create a RTV for each frame.
-	for (UINT n = 0; n < k_FrameCount; n++)
+	for (UINT n = 0; n < k_RenderLatency; n++)
 	{
 		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_swapChainBuffers[n]));
 		m_device->CreateRenderTargetView(m_swapChainBuffers[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
@@ -140,6 +139,8 @@ void DXApp::Init(HWND hWnd)
 
 	m_renderer = new DXRenderer;
 	m_renderer->Init();
+
+
 }
 
 void DXApp::InitDebugLayer()
@@ -168,8 +169,12 @@ void DXApp::Render()
 	if (g_device == nullptr)
 		return;
 
+	DXResourceContext & rc = m_resourceContexts[m_frameIndex];
+	m_rc = &rc;
+	rc.Reset();
+
 	m_commandAllocator->Reset();
-	m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get());
+	m_commandList->Reset(m_commandAllocator.Get(), m_psoNull.Get());
 
 	// Indicate that the back buffer will be used as a render target.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
@@ -180,8 +185,11 @@ void DXApp::Render()
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-	// Set necessary state.
+	
 	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
+
+	m_commandList->SetGraphicsRootConstantBufferView(1, m_renderer->m_cb->m_gpuPtr);
+	//m_commandList->SetGraphicsRootShaderResourceView(2, )
 
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
 	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
@@ -211,4 +219,3 @@ void DXApp::Render()
 	m_fence->WaitForGPU(m_commandQueue, m_fenceValue);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 }
-

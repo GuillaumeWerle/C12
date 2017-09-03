@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DXRenderer.h"
+#include "DXBuffer.h"
 
 extern ID3D12Device * g_device;
 
@@ -30,8 +31,9 @@ void DXRenderer::Init()
 		CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
 		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-		CD3DX12_ROOT_PARAMETER1 rootParameters[1];
-		rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+		CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+		rootParameters[0].InitAsDescriptorTable(_countof(ranges), &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
 
 		D3D12_STATIC_SAMPLER_DESC sampler = {};
 		sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
@@ -107,6 +109,18 @@ void DXRenderer::Init()
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
 	}
 
+	// Constant buffer
+	{
+		m_cb = new DXBuffer();
+		m_cb->Init(D3D12_HEAP_TYPE_UPLOAD, 256);
+		
+		XMFLOAT4 * data = (XMFLOAT4*)m_cb->m_cpuPtr;
+		data->x = 0.5f;
+		data->y = 0.6f;
+		data->z = 0.9f;
+		data->w = 1.0f;
+	}
+
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
 	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -135,4 +149,9 @@ void DXRenderer::Init()
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	CHECK_D3DOK(hr, g_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso)));
+}
+
+void DXRenderer::Render(ComPtr<ID3D12GraphicsCommandList> & commandList)
+{
+
 }
