@@ -36,6 +36,7 @@ using namespace DirectX;
 #include <vector>
 #include <string>
 #include <array>
+#include <stack>
 #include <memory>
 
 #include "Types.h"

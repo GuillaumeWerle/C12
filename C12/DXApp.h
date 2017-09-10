@@ -3,6 +3,8 @@
 
 class DXRenderer;
 class DXDescriptorHeap;
+class DXDescriptorHeapLinear;
+class DXDescriptorPool;
 class DXFence;
 class DXRenderer;
 class DXTexture2D;
@@ -10,11 +12,17 @@ class DXTexture2D;
 class DXApp
 {
 public:
+	static DXApp* ms_instance;
+
 	static const u32 k_RenderLatency = 2;
 	uint32_t m_width = 1920;
 	uint32_t m_height = 1080;
 
+	std::array<DXDescriptorPool *, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> & GetDescriptorPool() { return m_descriptorPool; }
+
 	void Init(HWND hWnd);
+
+
 	void Update();
 	void Render();
 
@@ -24,10 +32,12 @@ public:
 private:
 
 	void InitDebugLayer();
+	void InitSwapChain(HWND hWnd);
 
 	DXDescriptorHeap* m_swapChainBuffersDescriptorHeap = nullptr;
 	DXResourceContext m_resourceContexts[k_RenderLatency];
-	DXResourceContext * m_rc;
+	DXResourceContext* m_rc;
+	std::array<DXDescriptorPool*, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorPool;
 
 	u32 m_dxgiFactoryFlags;
 	ComPtr<IDXGIFactory4> m_dxgiFactory;
@@ -49,6 +59,5 @@ private:
 	// Render
 	DXRenderer* m_renderer;
 	DXTexture2D * m_texture = nullptr;
-
 };
 

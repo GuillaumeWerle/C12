@@ -2,22 +2,32 @@
 #include "DXApp.h"
 #include "DXRenderer.h"
 #include "DXDescriptorHeapLinear.h"
+#include "DXDescriptorPool.h"
 #include "DXFence.h"
 #include "DXRenderer.h"
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
 
 ID3D12Device * g_device = nullptr;
+DXApp* DXApp::ms_instance = nullptr;
+
 
 DXApp::DXApp()
 {
+	assert(ms_instance == nullptr);
+	ms_instance = this;
+	m_descriptorPool.assign(nullptr);
 }
 
 DXApp::~DXApp()
 {
+	for (auto & descriptor : m_descriptorPool)
+		delete descriptor;
 	delete m_texture;
 	delete m_renderer;
 	delete m_swapChainBuffersDescriptorHeap;
+	assert(ms_instance == this);
+	ms_instance = nullptr;
 }
 
 void GetHardwareAdapter(IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter)
@@ -95,41 +105,8 @@ void DXApp::Init(HWND hWnd)
 		}
 	}
 
-	m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
-	m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
-
-	// Describe and create the swap chain.
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-	swapChainDesc.BufferCount = k_RenderLatency;
-	swapChainDesc.Width = m_width;
-	swapChainDesc.Height = m_height;
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-	swapChainDesc.SampleDesc.Count = 1;
-
-	ComPtr<IDXGISwapChain1> swapChain;
-	CHECK_D3DOK(hr, m_dxgiFactory->CreateSwapChainForHwnd(
-		m_commandQueue.Get(),		// Swap chain needs the queue so that it can force a flush on it.
-		hWnd,
-		&swapChainDesc,
-		nullptr,
-		nullptr,
-		&swapChain
-	));
-	swapChain.As(&m_swapChain);
-
-	// This sample does not support fullscreen transitions.
-	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
-
+	InitSwapChain(hWnd);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-	// Create a RTV for each frame.
-	for (UINT n = 0; n < k_RenderLatency; n++)
-	{
-		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_swapChainBuffers[n]));
-		m_device->CreateRenderTargetView(m_swapChainBuffers[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
-	}
 
 	m_fence = std::make_unique<DXFence>();
 	m_fence->Init(m_fenceValue);
@@ -158,6 +135,45 @@ void DXApp::InitDebugLayer()
 			m_dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 	}
+}
+
+void DXApp::InitSwapChain(HWND hWnd)
+{
+	HRESULT hr;
+	m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
+	m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
+	// Describe and create the swap chain.
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+	swapChainDesc.BufferCount = k_RenderLatency;
+	swapChainDesc.Width = m_width;
+	swapChainDesc.Height = m_height;
+	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.SampleDesc.Count = 1;
+
+	ComPtr<IDXGISwapChain1> swapChain;
+	CHECK_D3DOK(hr, m_dxgiFactory->CreateSwapChainForHwnd(
+		m_commandQueue.Get(),		// Swap chain needs the queue so that it can force a flush on it.
+		hWnd,
+		&swapChainDesc,
+		nullptr,
+		nullptr,
+		&swapChain
+	));
+	swapChain.As(&m_swapChain);
+
+	// This sample does not support fullscreen transitions.
+	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
+
+	// Create a RTV for each frame.
+	for (UINT n = 0; n < k_RenderLatency; n++)
+	{
+		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_swapChainBuffers[n]));
+		m_device->CreateRenderTargetView(m_swapChainBuffers[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
+	}
+
 }
 
 void DXApp::Update()
