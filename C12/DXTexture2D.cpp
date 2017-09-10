@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "DXTexture2D.h"
+#include "DX.h"
 
-extern ID3D12Device * g_device;
-	
 DXTexture2D::DXTexture2D()
 {
 }
 
 DXTexture2D::~DXTexture2D()
 {
+	DX::PoolSRVCBVUAV->Free(m_srv);
 }
 
 void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
@@ -25,7 +25,7 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 	rdesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	rdesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-	g_device->CreateCommittedResource(
+	DX::Device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 		D3D12_HEAP_FLAG_NONE,
 		&rdesc,
@@ -33,14 +33,17 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 		nullptr,
 		IID_PPV_ARGS(&m_resource));
 
+	m_srv = DX::PoolSRVCBVUAV->Alloc();
+	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
+
 	UINT64 footPrintTotalBytes = 0;
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrintLayout;
 	UINT numRows;
 	UINT64 rowSizeInBytes;
-	g_device->GetCopyableFootprints(&rdesc, 0, 1, 0, &footPrintLayout, &numRows, &rowSizeInBytes, &footPrintTotalBytes);
+	DX::Device->GetCopyableFootprints(&rdesc, 0, 1, 0, &footPrintLayout, &numRows, &rowSizeInBytes, &footPrintTotalBytes);
 
 	// Create the GPU upload buffer.
-	g_device->CreateCommittedResource(
+	DX::Device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 		D3D12_HEAP_FLAG_NONE,
 		&CD3DX12_RESOURCE_DESC::Buffer(footPrintTotalBytes),

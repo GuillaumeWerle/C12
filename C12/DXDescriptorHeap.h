@@ -1,11 +1,6 @@
 #pragma once
 
-class DXDescriptorHandle
-{
-public:
-	CD3DX12_CPU_DESCRIPTOR_HANDLE CPU;
-	CD3DX12_GPU_DESCRIPTOR_HANDLE GPU;
-};
+#include "DXDescriptorHandle.h"
 
 class DXDescriptorHeap
 {
@@ -27,7 +22,7 @@ public:
 		return CD3DX12_GPU_DESCRIPTOR_HANDLE(m_gpuPtr, index, m_incrementSize);
 	}
 
-	void Init(D3D12_DESCRIPTOR_HEAP_TYPE type, u32 count, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+	void Init(D3D12_DESCRIPTOR_HEAP_TYPE type, u32 count, D3D12_DESCRIPTOR_HEAP_FLAGS);
 
 	DXDescriptorHeap();
 	virtual ~DXDescriptorHeap();

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "DXDescriptorHeap.h"
+
 class DXTexture2D
 {
 public:
 	ComPtr<ID3D12Resource> m_resource;
 	ComPtr<ID3D12Resource> m_uploadBuffer;
+	DXDescriptorHandle m_srv;
 
 	void Init(ComPtr<ID3D12GraphicsCommandList> & commandList);
 

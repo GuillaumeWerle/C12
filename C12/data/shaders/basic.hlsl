@@ -12,6 +12,7 @@
 struct PSInput
 {
 	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
 	float4 color : COLOR;
 };
 
@@ -20,17 +21,20 @@ cbuffer cb : register(b0)
 	float4 g_color;
 }
 
-PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
+Texture2D g_Albedo : register(t0);
+
+PSInput VSMain(float4 position : POSITION, float4 color : COLOR, float2 uv : TEXCOORD)
 {
 	PSInput result;
 
 	result.position = position;
 	result.color = color;
+	result.uv = uv;
 
 	return result;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	return input.color + g_color;
+	return float4(input.uv, 0, 1);
 }

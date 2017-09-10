@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "DXBuffer.h"
 #include "DXHelpers.h"
-
-extern ID3D12Device * g_device;
+#include "DX.h"
 
 DXBuffer::DXBuffer()
 {
@@ -50,7 +49,7 @@ void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u32 sizeInByte)
 	m_desc = desc;
 
 	HRESULT hr;
-	CHECK_D3DOK(hr, g_device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_buffer)));
+	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_buffer)));
 
 	D3D12_RANGE readRange = {};
 	m_buffer->Map(0, &readRange, (void**)&m_cpuPtr);

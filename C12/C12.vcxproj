@@ -147,8 +147,10 @@
   <ItemGroup>
     <ClInclude Include="C12.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DX.h" />
     <ClInclude Include="DXApp.h" />
     <ClInclude Include="DXBuffer.h" />
+    <ClInclude Include="DXDescriptorHandle.h" />
     <ClInclude Include="DXDescriptorHeap.h" />
     <ClInclude Include="DXDescriptorHeapLinear.h" />
     <ClInclude Include="DXDescriptorPool.h" />
@@ -165,7 +167,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DX.cpp" />
     <ClCompile Include="DXBuffer.cpp" />
+    <ClCompile Include="DXDescriptorHandle.cpp" />
     <ClCompile Include="DXDescriptorHeap.cpp" />
     <ClCompile Include="DXDescriptorHeapLinear.cpp" />
     <ClCompile Include="DXDescriptorPool.cpp" />

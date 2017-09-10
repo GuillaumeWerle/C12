@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "DXFence.h"
-
-extern ID3D12Device * g_device;
+#include "DX.h"
 
 DXFence::DXFence()
 {
@@ -14,7 +13,7 @@ DXFence::~DXFence()
 
 void DXFence::Init(u64 initvalue)
 {
-	g_device->CreateFence(initvalue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
+	DX::Device->CreateFence(initvalue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
 	// Create an event handle to use for frame synchronization.
 	m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	assert(m_fenceEvent);

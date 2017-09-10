@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "DX.h"
 #include "DXApp.h"
 #include "DXRenderer.h"
 #include "DXDescriptorHeapLinear.h"
@@ -8,7 +9,6 @@
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
 
-ID3D12Device * g_device = nullptr;
 DXApp* DXApp::ms_instance = nullptr;
 
 
@@ -16,16 +16,20 @@ DXApp::DXApp()
 {
 	assert(ms_instance == nullptr);
 	ms_instance = this;
-	m_descriptorPool.assign(nullptr);
 }
 
 DXApp::~DXApp()
 {
-	for (auto & descriptor : m_descriptorPool)
-		delete descriptor;
 	delete m_texture;
 	delete m_renderer;
 	delete m_swapChainBuffersDescriptorHeap;
+
+	// descriptor pools must be released at the end.
+	delete DX::PoolSRVCBVUAV;
+	delete DX::PoolSampler;
+	delete DX::PoolRTV;
+	delete DX::PoolDSV;
+
 	assert(ms_instance == this);
 	ms_instance = nullptr;
 }
@@ -73,7 +77,7 @@ void DXApp::Init(HWND hWnd)
 	ComPtr<IDXGIAdapter1> hardwareAdapter;
 	GetHardwareAdapter(m_dxgiFactory.Get(), &hardwareAdapter);
 	CHECK_D3DOK(hr, D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
-	g_device = m_device.Get();
+	DX::Device = m_device.Get();
 
 	// Describe and create the command queue.
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -93,17 +97,27 @@ void DXApp::Init(HWND hWnd)
 		for (u32 i = 0; i < _countof(heapSizes); i++)
 		{
 			assert(heapSizes[i]);
-			res.m_descriptorHeaps[i] = new DXDescriptorHeapLinear;
 
-			D3D12_DESCRIPTOR_HEAP_FLAGS flags;
+			D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 			if (i == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || i == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
 				flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			else
-				flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
+			res.m_descriptorHeaps[i] = new DXDescriptorHeapLinear;
 			res.m_descriptorHeaps[i]->Init((D3D12_DESCRIPTOR_HEAP_TYPE)i, heapSizes[i], flags);
 		}
 	}
+
+	DX::PoolSRVCBVUAV = new DXDescriptorPool;
+	DX::PoolSRVCBVUAV->Init(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 65535, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
+	DX::PoolSampler = new DXDescriptorPool;
+	DX::PoolSampler->Init(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 256, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
+	DX::PoolDSV = new DXDescriptorPool;
+	DX::PoolDSV->Init(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1024, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
+	DX::PoolRTV = new DXDescriptorPool;
+	DX::PoolRTV->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1024, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
 	InitSwapChain(hWnd);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
@@ -183,7 +197,7 @@ void DXApp::Update()
 
 void DXApp::Render()
 {
-	if (g_device == nullptr)
+	if (DX::Device == nullptr)
 		return;
 
 	DXResourceContext & rc = m_resourceContexts[m_frameIndex];
@@ -199,6 +213,9 @@ void DXApp::Render()
 		m_texture->Init(m_commandList);
 	}
 
+	ID3D12DescriptorHeap* ppHeaps[] = { rc.GetCBVSRVUAVHeap()->m_heap.Get() };
+	m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
 	// Indicate that the back buffer will be used as a render target.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
@@ -210,6 +227,12 @@ void DXApp::Render()
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 	
 	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
+
+	{
+		DXDescriptorHandle hsrv = rc.GetCBVSRVUAVHeap()->Alloc(1);
+		DX::Device->CopyDescriptorsSimple(1, hsrv.CPU, m_texture->m_srv.CPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		m_commandList->SetGraphicsRootDescriptorTable(0, hsrv.GPU);
+	}
 
 	m_commandList->SetGraphicsRootConstantBufferView(1, m_renderer->m_cb->m_gpuPtr);
 	//m_commandList->SetGraphicsRootShaderResourceView(2, )

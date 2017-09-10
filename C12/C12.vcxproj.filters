@@ -34,6 +34,8 @@
     <ClInclude Include="DXTexture2D.h" />
     <ClInclude Include="DXDescriptorHeapLinear.h" />
     <ClInclude Include="DXDescriptorPool.h" />
+    <ClInclude Include="DX.h" />
+    <ClInclude Include="DXDescriptorHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -50,6 +52,8 @@
     <ClCompile Include="DXTexture2D.cpp" />
     <ClCompile Include="DXDescriptorHeapLinear.cpp" />
     <ClCompile Include="DXDescriptorPool.cpp" />
+    <ClCompile Include="DX.cpp" />
+    <ClCompile Include="DXDescriptorHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">
