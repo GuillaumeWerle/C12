@@ -32,6 +32,7 @@
     <ClInclude Include="DXHelpers.h" />
     <ClInclude Include="DXResourceContext.h" />
     <ClInclude Include="DXTexture2D.h" />
+    <ClInclude Include="DXDescriptorHeapLinear.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="DXHelpers.cpp" />
     <ClCompile Include="DXResourceContext.cpp" />
     <ClCompile Include="DXTexture2D.cpp" />
+    <ClCompile Include="DXDescriptorHeapLinear.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

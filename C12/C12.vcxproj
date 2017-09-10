@@ -150,6 +150,7 @@
     <ClInclude Include="DXApp.h" />
     <ClInclude Include="DXBuffer.h" />
     <ClInclude Include="DXDescriptorHeap.h" />
+    <ClInclude Include="DXDescriptorHeapLinear.h" />
     <ClInclude Include="DXFence.h" />
     <ClInclude Include="DXHelpers.h" />
     <ClInclude Include="DXRenderer.h" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClCompile Include="DXBuffer.cpp" />
     <ClCompile Include="DXDescriptorHeap.cpp" />
+    <ClCompile Include="DXDescriptorHeapLinear.cpp" />
     <ClCompile Include="DXFence.cpp" />
     <ClCompile Include="DXHelpers.cpp" />
     <ClCompile Include="DXRenderer.cpp" />

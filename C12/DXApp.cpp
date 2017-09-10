@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "DXApp.h"
 #include "DXRenderer.h"
-#include "DXDescriptorHeap.h"
+#include "DXDescriptorHeapLinear.h"
 #include "DXFence.h"
 #include "DXRenderer.h"
 #include "DXBuffer.h"
+#include "DXTexture2D.h"
 
 ID3D12Device * g_device = nullptr;
 
@@ -14,8 +15,8 @@ DXApp::DXApp()
 
 DXApp::~DXApp()
 {
+	delete m_texture;
 	delete m_renderer;
-
 	delete m_swapChainBuffersDescriptorHeap;
 }
 
@@ -82,7 +83,7 @@ void DXApp::Init(HWND hWnd)
 		for (u32 i = 0; i < _countof(heapSizes); i++)
 		{
 			assert(heapSizes[i]);
-			res.m_descriptorHeaps[i] = new DXDescriptorHeap;
+			res.m_descriptorHeaps[i] = new DXDescriptorHeapLinear;
 
 			D3D12_DESCRIPTOR_HEAP_FLAGS flags;
 			if (i == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || i == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
@@ -175,6 +176,12 @@ void DXApp::Render()
 
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), m_psoNull.Get());
+
+	if (m_texture == nullptr)
+	{
+		m_texture = new DXTexture2D;
+		m_texture->Init(m_commandList);
+	}
 
 	// Indicate that the back buffer will be used as a render target.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));

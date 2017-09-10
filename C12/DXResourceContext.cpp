@@ -1,14 +1,12 @@
 #include "stdafx.h"
 #include "DXResourceContext.h"
-#include "DXDescriptorHeap.h"
-
+#include "DXDescriptorHeapLinear.h"
 
 DXResourceContext::DXResourceContext()
 {
 	m_descriptorHeaps.assign(nullptr);
 
 }
-
 
 DXResourceContext::~DXResourceContext()
 {

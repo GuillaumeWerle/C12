@@ -5,6 +5,7 @@ class DXRenderer;
 class DXDescriptorHeap;
 class DXFence;
 class DXRenderer;
+class DXTexture2D;
 
 class DXApp
 {
@@ -47,6 +48,7 @@ private:
 
 	// Render
 	DXRenderer* m_renderer;
+	DXTexture2D * m_texture = nullptr;
 
 };
 
