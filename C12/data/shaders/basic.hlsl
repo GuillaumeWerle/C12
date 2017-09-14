@@ -23,11 +23,15 @@ cbuffer cb : register(b0)
 
 Texture2D g_Albedo : register(t0);
 
+SamplerState g_Sampler : register(s0);
+
+
 PSInput VSMain(float4 position : POSITION, float4 color : COLOR, float2 uv : TEXCOORD)
 {
 	PSInput result;
 
-	result.position = position;
+	result.position = position * float4(3,3,1,1);
+	
 	result.color = color;
 	result.uv = uv;
 
@@ -36,5 +40,6 @@ PSInput VSMain(float4 position : POSITION, float4 color : COLOR, float2 uv : TEX
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	return float4(input.uv, 0, 1);
+	//return float4(input.uv,0,1);
+	return g_Albedo.Sample(g_Sampler, input.uv);
 }

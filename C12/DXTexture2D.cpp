@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DXTexture2D.h"
 #include "DX.h"
+#include "DXHelpers.h"
+
 
 DXTexture2D::DXTexture2D()
 {
@@ -51,14 +53,26 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 		nullptr,
 		IID_PPV_ARGS(&m_uploadBuffer));
 
-	std::vector<UINT8> texture;
-	texture.resize(footPrintTotalBytes);
-	texture.assign(footPrintTotalBytes, 255);
+	std::vector<u32> texture;
+	texture.resize(256*256);
+
+	u32 white = DXHelpers::RGBA(255, 255, 255, 255);
+	u32 black = 0;
+
+	for (u32 y = 0; y < 256; y++)
+	{
+		bool by = (y >> 2) & 1;
+		for (u32 x = 0; x < 256; x++)
+		{
+			bool bx = (x >> 2) & 1;
+			texture[x + y * 256] = bx == by ? white : black;
+		}
+	}
 
 	D3D12_RANGE readRange = {};
 	void * cpuPtr;
 	m_uploadBuffer->Map(0, &readRange, &cpuPtr);
-	memcpy(cpuPtr, &texture[0], texture.size());
+	memcpy(cpuPtr, &texture[0], 256*256*4);
 
 	D3D12_TEXTURE_COPY_LOCATION dst;
 	dst.pResource = m_resource.Get();

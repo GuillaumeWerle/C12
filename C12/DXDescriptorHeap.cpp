@@ -23,7 +23,7 @@ void DXDescriptorHeap::Init(D3D12_DESCRIPTOR_HEAP_TYPE type, u32 count, D3D12_DE
 	m_desc.Flags = flags;
 	CHECK_D3DOK(hr, DX::Device->CreateDescriptorHeap(&m_desc, IID_PPV_ARGS(&m_heap)));
 
-	m_cpuPtr = m_heap->GetCPUDescriptorHandleForHeapStart();
-	m_gpuPtr = m_heap->GetGPUDescriptorHandleForHeapStart();
+	m_cpu = m_heap->GetCPUDescriptorHandleForHeapStart();
+	m_gpu = m_heap->GetGPUDescriptorHandleForHeapStart();
 	m_incrementSize = DX::Device->GetDescriptorHandleIncrementSize(type);
 }
