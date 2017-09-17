@@ -158,6 +158,7 @@
     <ClInclude Include="DXHelpers.h" />
     <ClInclude Include="DXRenderer.h" />
     <ClInclude Include="DXResourceContext.h" />
+    <ClInclude Include="DXRootSignature.h" />
     <ClInclude Include="DXShader.h" />
     <ClInclude Include="DXShaderCompiler.h" />
     <ClInclude Include="DXTexture2D.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX.cpp" />
@@ -177,6 +179,7 @@
     <ClCompile Include="DXHelpers.cpp" />
     <ClCompile Include="DXRenderer.cpp" />
     <ClCompile Include="DXResourceContext.cpp" />
+    <ClCompile Include="DXRootSignature.cpp" />
     <ClCompile Include="DXShader.cpp" />
     <ClCompile Include="DXShaderCompiler.cpp" />
     <ClCompile Include="DXTexture2D.cpp" />
@@ -188,6 +191,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc" />

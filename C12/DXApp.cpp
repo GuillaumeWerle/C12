@@ -86,25 +86,10 @@ void DXApp::Init(HWND hWnd)
 
 	CHECK_D3DOK(hr, m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
 
-	u32 heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES] = {};
-	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV] = 16384;
-	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER] = 256;
-	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_RTV] = 4096;
-	heapSizes[D3D12_DESCRIPTOR_HEAP_TYPE_DSV] = 4096;
 
 	for (auto & res : m_resourceContexts)
 	{
-		for (u32 i = 0; i < _countof(heapSizes); i++)
-		{
-			assert(heapSizes[i]);
-
-			D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			if (i == D3D12_DESCRIPTOR_HEAP_TYPE_RTV || i == D3D12_DESCRIPTOR_HEAP_TYPE_DSV)
-				flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-			res.m_descriptorHeaps[i] = new DXDescriptorHeapLinear;
-			res.m_descriptorHeaps[i]->Init((D3D12_DESCRIPTOR_HEAP_TYPE)i, heapSizes[i], flags);
-		}
+		res.Init();
 	}
 
 	DX::PoolSRVCBVUAV = new DXDescriptorPool;
@@ -225,33 +210,52 @@ void DXApp::Render()
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-	
+
 	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
 
+	struct cblocal
 	{
-		DXDescriptorHandle hsrv = rc.GetCBVSRVUAVHeap()->Alloc(1);
-		DX::Device->CopyDescriptorsSimple(1, hsrv.CPU, m_texture->m_srv.CPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		m_commandList->SetGraphicsRootDescriptorTable(0, hsrv.GPU);
-	}
+		XMFLOAT4 color;
+		XMFLOAT4 offset;
+	};
 
-	m_commandList->SetGraphicsRootConstantBufferView(1, m_renderer->m_cb->m_gpuPtr);
-	//m_commandList->SetGraphicsRootShaderResourceView(2, )
+	DXUploadContext m = rc.AllocCB(sizeof(cblocal));
+	cblocal cb;
+	cb.color = XMFLOAT4(1, 0, 0, 1);
+	cb.offset = XMFLOAT4(0.25f, 0, 0, 0);
+	memcpy(m.CPU, &cb, sizeof(cb));
+
+	DXDescriptorHandle tableSRV = rc.GetCBVSRVUAVHeap()->Alloc(1);
+	DXDescriptorHandle tableCB = rc.GetCBVSRVUAVHeap()->Alloc(1);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC cbviewdesc = {};
+	cbviewdesc.BufferLocation = m.GPU;
+	cbviewdesc.SizeInBytes = AlignOnPowerOfTwo<256>(sizeof(cblocal));
+	DX::Device->CreateConstantBufferView(&cbviewdesc, tableCB.CPU);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[] = { m_texture->m_srv.CPU };
+
+	u32 destRanges[1] = { 1 };
+	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, 1, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//DX::Device->CopyDescriptors(1, &tableCB.CPU, destRanges, 1, cbHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_commandList->SetGraphicsRootDescriptorTable(0, tableSRV.GPU);
+	m_commandList->SetGraphicsRootDescriptorTable(1, tableCB.GPU);
+
+	//m_commandList->SetGraphicsRootConstantBufferView(1, m.GPU);
 
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
 	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
 
 	m_commandList->RSSetViewports(1, &viewport);
 	m_commandList->RSSetScissorRects(1, &scissorRect);
-
 	m_commandList->SetPipelineState(m_renderer->m_pso.Get());
 	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_commandList->IASetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
 	m_commandList->DrawInstanced(3, 1, 0, 0);
 
-
 	// Indicate that the back buffer will now be used to present.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-
 	m_commandList->Close();
 
 	// Execute the command list.

@@ -40,6 +40,7 @@ using namespace DirectX;
 #include <memory>
 
 #include "Types.h"
+#include "Utils.h"
 
 #ifdef _DEBUG
 	#define CHECK_D3DOK(_hr, _code) { _hr = _code; assert(SUCCEEDED(_hr)); }

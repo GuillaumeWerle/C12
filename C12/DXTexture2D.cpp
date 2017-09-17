@@ -74,16 +74,8 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 	m_uploadBuffer->Map(0, &readRange, &cpuPtr);
 	memcpy(cpuPtr, &texture[0], 256*256*4);
 
-	D3D12_TEXTURE_COPY_LOCATION dst;
-	dst.pResource = m_resource.Get();
-	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-	dst.SubresourceIndex = 0;
-
-	D3D12_TEXTURE_COPY_LOCATION src;
-	src.pResource = m_uploadBuffer.Get();
-	src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
-	src.PlacedFootprint = footPrintLayout;
-
+	CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), 0);
+	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer.Get(), footPrintLayout);
 	commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
     commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 }
