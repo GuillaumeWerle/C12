@@ -11,7 +11,7 @@ public:
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
-	DXBuffer * m_cb;
+	//DXBuffer * m_cb;
 
 	void Init();
 	void Render(ComPtr<ID3D12GraphicsCommandList> & commandList);

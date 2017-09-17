@@ -171,10 +171,11 @@ void DXApp::InitSwapChain(HWND hWnd)
 	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
 
 	// Create a RTV for each frame.
-	for (UINT n = 0; n < k_RenderLatency; n++)
+	for (UINT bufferIndex = 0; bufferIndex < k_RenderLatency; bufferIndex++)
 	{
-		m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_swapChainBuffers[n]));
-		m_device->CreateRenderTargetView(m_swapChainBuffers[n].Get(), nullptr, m_swapChainBuffersDescriptorHeap->GetCpuHandle(n));
+		m_swapChain->GetBuffer(bufferIndex, IID_PPV_ARGS(&m_swapChainBuffers[bufferIndex]));
+		m_swapChainRTVs[bufferIndex] = m_swapChainBuffersDescriptorHeap->GetHandle(bufferIndex);
+		DX::Device->CreateRenderTargetView(m_swapChainBuffers[bufferIndex].Get(), nullptr, m_swapChainRTVs[bufferIndex].CPU);
 	}
 
 }
@@ -208,12 +209,13 @@ void DXApp::Render()
 	// Indicate that the back buffer will be used as a render target.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainBuffersDescriptorHeap->GetCpuHandle(m_frameIndex);
+	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainBuffersDescriptorHeap->GetCpuHandle(m_frameIndex);
+	DXDescriptorHandle & swapChainRTV = m_swapChainRTVs[m_frameIndex];
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	m_commandList->ClearRenderTargetView(swapChainRTV.CPU, clearColor, 0, nullptr);
+	m_commandList->OMSetRenderTargets(1, &swapChainRTV.CPU, FALSE, nullptr);
 
 	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
 
@@ -226,7 +228,7 @@ void DXApp::Render()
 	DXUploadContext m = rc.AllocCB(sizeof(cblocal));
 	cblocal cb;
 	cb.color = XMFLOAT4(1, 0, 0, 1);
-	cb.offset = XMFLOAT4(0.25f * sinf(m_timer->GetTimeSinceStart()) , 0, 0, 0);
+	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 	memcpy(m.CPU, &cb, sizeof(cb));
 	m_commandList->SetGraphicsRootConstantBufferView(0, m.GPU);
 
@@ -260,6 +262,6 @@ void DXApp::Render()
 	m_swapChain->Present(1, 0);
 
 	m_fenceValue++;
-	m_fence->WaitForGPU(m_commandQueue, m_fenceValue);
+	m_fence->Sync(m_commandQueue, m_fenceValue);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 }

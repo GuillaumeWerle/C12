@@ -22,6 +22,14 @@ public:
 		return CD3DX12_GPU_DESCRIPTOR_HANDLE(m_gpu, index, m_incrementSize);
 	}
 
+	DXDescriptorHandle GetHandle(u32 index)
+	{
+		DXDescriptorHandle h;
+		h.CPU = GetCpuHandle(index);
+		h.GPU = GetGpuHandle(index);
+		return h;
+	}
+
 	void Init(D3D12_DESCRIPTOR_HEAP_TYPE type, u32 count, D3D12_DESCRIPTOR_HEAP_FLAGS);
 
 	DXDescriptorHeap();

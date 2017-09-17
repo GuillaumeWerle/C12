@@ -12,9 +12,9 @@ DXShaderCompiler::~DXShaderCompiler()
 {
 }
 
-DXShader * DXShaderCompiler::Compile(const std::wstring & path, DXShaderType shaderType, const std::string & entry)
+HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, DXShaderType shaderType, const std::string & entry)
 {
-	DXShader * shader = new DXShader;
+	DXShader * shader = &output;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -27,16 +27,20 @@ DXShader * DXShaderCompiler::Compile(const std::wstring & path, DXShaderType sha
 	switch (shaderType)
 	{
 	case DXShaderType::VS:
-		profile = "vs_5_0";
+		profile = "vs_5_1";
 		break;
 	case DXShaderType::PS:
-		profile = "ps_5_0";
+		profile = "ps_5_1";
 		break;
 	default:
 		assert(0);
 	}
-
-	D3DCompileFromFile(path.c_str(), nullptr, nullptr, entry.c_str(), profile, compileFlags, 0, &shader->m_blob, nullptr);
-
-	return shader;
+	ComPtr<ID3DBlob> errorMsg;
+	HRESULT hr = D3DCompileFromFile(path.c_str(), nullptr, nullptr, entry.c_str(), profile, compileFlags, 0, &shader->m_blob, &errorMsg);
+	if (FAILED(hr))
+	{
+		::OutputDebugStringA((LPCSTR)errorMsg->GetBufferPointer());
+		assert(0);
+	}
+	return hr;
 }

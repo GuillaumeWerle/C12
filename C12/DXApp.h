@@ -1,5 +1,6 @@
 #pragma once
 #include "DXResourceContext.h"
+#include "DXDescriptorHandle.h"
 
 class DXRenderer;
 class DXDescriptorHeap;
@@ -29,8 +30,8 @@ public:
 
 private:
 
-
 	DXDescriptorHeap* m_swapChainBuffersDescriptorHeap = nullptr;
+	DXDescriptorHandle m_swapChainRTVs[k_RenderLatency];
 	DXResourceContext m_resourceContexts[k_RenderLatency];
 	DXResourceContext* m_rc;
 

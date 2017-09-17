@@ -156,6 +156,7 @@
     <ClInclude Include="DXDescriptorPool.h" />
     <ClInclude Include="DXFence.h" />
     <ClInclude Include="DXHelpers.h" />
+    <ClInclude Include="DXRenderContext.h" />
     <ClInclude Include="DXRenderer.h" />
     <ClInclude Include="DXResourceContext.h" />
     <ClInclude Include="DXRootSignature.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="DXDescriptorPool.cpp" />
     <ClCompile Include="DXFence.cpp" />
     <ClCompile Include="DXHelpers.cpp" />
+    <ClCompile Include="DXRenderContext.cpp" />
     <ClCompile Include="DXRenderer.cpp" />
     <ClCompile Include="DXResourceContext.cpp" />
     <ClCompile Include="DXRootSignature.cpp" />

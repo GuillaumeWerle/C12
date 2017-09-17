@@ -16,7 +16,7 @@ struct PSInput
 	float4 color : COLOR;
 };
 
-cbuffer cb : register(b0)
+cbuffer cb : register(b0,space0)
 {
 	float4 g_color;
 	float4 g_offset;

@@ -19,10 +19,23 @@ void DXFence::Init(u64 initvalue)
 	assert(m_fenceEvent);
 }
 
-void DXFence::WaitForGPU(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value)
-{
+void DXFence::Signal(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value)
+{	
 	commandQueue->Signal(m_fence.Get(), value);
+}
+
+void DXFence::Wait(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value)
+{
+	if (m_fence->GetCompletedValue() == value)
+		return;
+
 	m_fence->SetEventOnCompletion(value, m_fenceEvent);
 	WaitForSingleObject(m_fenceEvent, INFINITE);
+}
+
+void DXFence::Sync(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value)
+{
+	Signal(commandQueue, value);
+	Wait(commandQueue, value);
 }
 

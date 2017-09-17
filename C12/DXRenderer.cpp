@@ -2,6 +2,8 @@
 #include "DXRenderer.h"
 #include "DXBuffer.h"
 #include "DX.h"
+#include "DXShader.h"
+#include "DXShaderCompiler.h"
 
 
 DXRenderer::DXRenderer()
@@ -113,7 +115,7 @@ void DXRenderer::Init()
 	}
 
 	// Constant buffer
-	{
+	/*{
 		m_cb = new DXBuffer();
 		m_cb->Init(D3D12_HEAP_TYPE_UPLOAD, 256);
 		
@@ -122,7 +124,7 @@ void DXRenderer::Init()
 		data->y = 0.6f;
 		data->z = 0.9f;
 		data->w = 1.0f;
-	}
+	}*/
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -131,17 +133,23 @@ void DXRenderer::Init()
 	UINT compileFlags = 0;
 #endif
 	
-	ComPtr<ID3DBlob> vertexShader;
-	ComPtr<ID3DBlob> pixelShader;
-	CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-	CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+	//ComPtr<ID3DBlob> vertexShader;
+	//ComPtr<ID3DBlob> pixelShader;
+	//ComPtr<ID3DBlob> errorMsg;
+	//CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorMsg));
+	//CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorMsg));
+
+	DXShader vs, ps;
+	DXShaderCompiler compiler;
+	compiler.Compile(vs, L"data\\shaders\\basic.hlsl", DXShaderType::VS, "VSMain");
+	compiler.Compile(ps, L"data\\shaders\\basic.hlsl", DXShaderType::PS, "PSMain");
 
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 	psoDesc.pRootSignature = m_rootSignature.Get();
-	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
-	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs.m_blob.Get());
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps.m_blob.Get());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthEnable = FALSE;

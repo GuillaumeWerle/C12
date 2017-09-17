@@ -10,7 +10,10 @@ public:
 	}
 
 	void Init(u64 initvalue);
-	void WaitForGPU(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value);
+
+	void Signal(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value);
+	void Wait(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value);
+	void Sync(ComPtr<ID3D12CommandQueue> & commandQueue, u64 value);
 
 	DXFence();
 	~DXFence();
