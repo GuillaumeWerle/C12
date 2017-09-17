@@ -8,6 +8,7 @@
 #include "DXRenderer.h"
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
+#include "Timer.h"
 
 DXApp* DXApp::ms_instance = nullptr;
 
@@ -20,6 +21,7 @@ DXApp::DXApp()
 
 DXApp::~DXApp()
 {
+	delete m_timer;
 	delete m_texture;
 	delete m_renderer;
 	delete m_swapChainBuffersDescriptorHeap;
@@ -65,6 +67,8 @@ void GetHardwareAdapter(IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter)
 
 void DXApp::Init(HWND hWnd)
 {
+	m_timer = new Timer;
+
 	m_dxgiFactoryFlags = 0;
 
 #if defined(_DEBUG)
@@ -177,7 +181,7 @@ void DXApp::InitSwapChain(HWND hWnd)
 
 void DXApp::Update()
 {
-
+	m_timer->Tick();
 }
 
 void DXApp::Render()
@@ -222,27 +226,17 @@ void DXApp::Render()
 	DXUploadContext m = rc.AllocCB(sizeof(cblocal));
 	cblocal cb;
 	cb.color = XMFLOAT4(1, 0, 0, 1);
-	cb.offset = XMFLOAT4(0.25f, 0, 0, 0);
+	cb.offset = XMFLOAT4(0.25f * sinf(m_timer->GetTimeSinceStart()) , 0, 0, 0);
 	memcpy(m.CPU, &cb, sizeof(cb));
+	m_commandList->SetGraphicsRootConstantBufferView(0, m.GPU);
 
 	DXDescriptorHandle tableSRV = rc.GetCBVSRVUAVHeap()->Alloc(1);
-	DXDescriptorHandle tableCB = rc.GetCBVSRVUAVHeap()->Alloc(1);
-
-	D3D12_CONSTANT_BUFFER_VIEW_DESC cbviewdesc = {};
-	cbviewdesc.BufferLocation = m.GPU;
-	cbviewdesc.SizeInBytes = AlignOnPowerOfTwo<256>(sizeof(cblocal));
-	DX::Device->CreateConstantBufferView(&cbviewdesc, tableCB.CPU);
-
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[] = { m_texture->m_srv.CPU };
 
 	u32 destRanges[1] = { 1 };
 	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, 1, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//DX::Device->CopyDescriptors(1, &tableCB.CPU, destRanges, 1, cbHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	m_commandList->SetGraphicsRootDescriptorTable(0, tableSRV.GPU);
-	m_commandList->SetGraphicsRootDescriptorTable(1, tableCB.GPU);
-
-	//m_commandList->SetGraphicsRootConstantBufferView(1, m.GPU);
+	m_commandList->SetGraphicsRootDescriptorTable(1, tableSRV.GPU);
 
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
 	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);

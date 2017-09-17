@@ -3,34 +3,27 @@
 #include <winerror.h>
 #include "DX.h"
 
-
 DXRootSignature::DXRootSignature()
 {
 }
-
 
 DXRootSignature::~DXRootSignature()
 {
 }
 
-void DXRootSignature::Create(u32 cbCount, u32 srvCount, u32 uavCount)
+void DXRootSignature::Create(u32 srvCount)
 {
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-	// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
-	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { D3D_ROOT_SIGNATURE_VERSION_1_1 };
 	if (FAILED(DX::Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-	{
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-	}
 
-	CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-	ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+	CD3DX12_DESCRIPTOR_RANGE1 srvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, srvCount, 0);
 
-	CD3DX12_ROOT_PARAMETER1 rootParameters[2];
-	rootParameters[0].InitAsDescriptorTable(_countof(ranges), &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
-	rootParameters[1].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	std::array<CD3DX12_ROOT_PARAMETER1,4> rootParameters;
+	rootParameters[0].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[1].InitAsConstantBufferView(1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[2].InitAsConstantBufferView(2, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[3].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
 
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -45,10 +38,10 @@ void DXRootSignature::Create(u32 cbCount, u32 srvCount, u32 uavCount)
 	sampler.MaxLOD = D3D12_FLOAT32_MAX;
 	sampler.ShaderRegister = 0;
 	sampler.RegisterSpace = 0;
-	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	rootSignatureDesc.Init_1_1((u32)rootParameters.size(), &rootParameters[0], 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;

@@ -38,6 +38,7 @@
     <ClInclude Include="DXDescriptorHandle.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="DXRootSignature.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -58,6 +59,7 @@
     <ClCompile Include="DXDescriptorHandle.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="DXRootSignature.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

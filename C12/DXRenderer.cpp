@@ -29,14 +29,12 @@ void DXRenderer::Init()
 		}
 
 		CD3DX12_DESCRIPTOR_RANGE1 rangeSRV[1];
-		rangeSRV[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-
-		CD3DX12_DESCRIPTOR_RANGE1 rangeCB[1];
-		rangeCB[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+		rangeSRV[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
+//		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
 		CD3DX12_ROOT_PARAMETER1 rootParameters[2];
-		rootParameters[0].InitAsDescriptorTable(_countof(rangeSRV), &rangeSRV[0], D3D12_SHADER_VISIBILITY_ALL);
-		rootParameters[1].InitAsDescriptorTable(_countof(rangeCB), &rangeCB[0], D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[0].InitAsConstantBufferView(0);
+		rootParameters[1].InitAsDescriptorTable(_countof(rangeSRV), &rangeSRV[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
 		D3D12_STATIC_SAMPLER_DESC sampler = {};
 		sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;

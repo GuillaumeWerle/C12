@@ -77,6 +77,7 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 	CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), 0);
 	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer.Get(), footPrintLayout);
 	commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, 
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
 }
 

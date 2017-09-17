@@ -8,6 +8,7 @@ class DXDescriptorPool;
 class DXFence;
 class DXRenderer;
 class DXTexture2D;
+class Timer;
 
 class DXApp
 {
@@ -53,6 +54,8 @@ private:
 	// Render
 	DXRenderer* m_renderer;
 	DXTexture2D * m_texture = nullptr;
+
+	Timer * m_timer = nullptr;
 
 	void InitDebugLayer();
 	void InitSwapChain(HWND hWnd);
