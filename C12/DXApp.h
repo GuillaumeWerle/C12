@@ -10,6 +10,7 @@ class DXFence;
 class DXRenderer;
 class DXTexture2D;
 class Timer;
+class DXRenderContext;
 
 class DXApp
 {
@@ -24,6 +25,7 @@ public:
 
 	void Update();
 	void Render();
+	void Render__();
 
 	DXApp();
 	~DXApp();
@@ -34,6 +36,7 @@ private:
 	DXDescriptorHandle m_swapChainRTVs[k_RenderLatency];
 	DXResourceContext m_resourceContexts[k_RenderLatency];
 	DXResourceContext* m_rc;
+	DXRenderContext* m_renderContext[k_RenderLatency];
 
 	u32 m_dxgiFactoryFlags;
 	ComPtr<IDXGIFactory4> m_dxgiFactory;

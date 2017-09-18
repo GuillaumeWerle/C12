@@ -10,6 +10,7 @@
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
 #include "Timer.h"
+#include "DXRenderContext.h"
 
 DXApp* DXApp::ms_instance = nullptr;
 
@@ -22,6 +23,12 @@ DXApp::DXApp()
 
 DXApp::~DXApp()
 {
+	for (u32 i = 0; i < k_RenderLatency; i++)
+	{
+		m_renderContext[i]->Shutdown(m_commandQueue);
+		delete m_renderContext[i];
+	}
+
 	delete m_timer;
 	delete m_texture;
 	delete m_renderer;
@@ -122,6 +129,11 @@ void DXApp::Init(HWND hWnd)
 	m_renderer = new DXRenderer;
 	m_renderer->Init();
 
+	for (u32 i = 0; i < k_RenderLatency; i++)
+	{
+		m_renderContext[i] = new DXRenderContext;
+		m_renderContext[i]->Init();
+	}
 
 }
 
@@ -187,6 +199,59 @@ void DXApp::Update()
 }
 
 void DXApp::Render()
+{
+	if (DX::Device == nullptr)
+		return;
+
+	DXRenderContext * rc = m_renderContext[m_frameIndex];
+	rc->Reset(m_commandQueue);
+
+	if (m_texture == nullptr)
+	{
+		m_texture = new DXTexture2D;
+		m_texture->Init( rc->m_commandList );
+	}
+
+	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	DXDescriptorHandle & swapChainRTV = m_swapChainRTVs[m_frameIndex];
+	rc->ClearRTV(swapChainRTV, XMFLOAT4(0.2f, 0.3f, 0.7f, 1.0f));
+	rc->SetRenderTarget(swapChainRTV);
+	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
+	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
+	rc->SetViewport(viewport);
+	rc->SetScissorRect(scissorRect);
+
+	rc->SetGraphicRootSignature(m_renderer->m_rootSignature);
+	rc->SetPSO(m_renderer->m_pso.Get());
+	struct cblocal
+	{
+		XMFLOAT4 color;
+		XMFLOAT4 offset;
+	};
+	cblocal cb;
+	cb.color = XMFLOAT4(1, 0, 0, 1);
+	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
+
+	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
+	rc->SetSRV(&m_texture->m_srv, 1);
+
+	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
+	rc->DrawInstanced(3, 1, 0, 0);
+
+	// Indicate that the back buffer will now be used to present.
+	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	rc->Close();
+	rc->Execute(m_commandQueue);
+
+	// Present the frame.
+	m_swapChain->Present(1, 0);
+	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+}
+
+void DXApp::Render__()
 {
 	if (DX::Device == nullptr)
 		return;

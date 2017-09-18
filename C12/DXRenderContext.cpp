@@ -15,6 +15,11 @@ DXRenderContext::~DXRenderContext()
 	delete m_resource;
 }
 
+void DXRenderContext::Shutdown(ComPtr<ID3D12CommandQueue> & queue)
+{
+	m_fence->Sync(queue, ++m_fenceValue);
+}
+
 void DXRenderContext::Init()
 {
 	m_resource = new DXResourceContext;
@@ -31,7 +36,7 @@ void DXRenderContext::Init()
 void DXRenderContext::Reset(ComPtr<ID3D12CommandQueue> & queue)
 {
 	m_fence->Wait(queue, m_fenceValue);
-	m_fence->Signal(queue, ++m_fenceValue);
+
 	m_resource->Reset();
 	m_commandAllocator->Reset();
 	m_commandList->Reset(m_commandAllocator.Get(), m_psoNull.Get());
@@ -43,6 +48,13 @@ void DXRenderContext::Reset(ComPtr<ID3D12CommandQueue> & queue)
 void DXRenderContext::Close()
 {
 	m_commandList->Close();
+}
+
+void DXRenderContext::Execute(ComPtr<ID3D12CommandQueue> & queue)
+{
+	ID3D12CommandList* ppCommandLists[] = { GetCommandList() };
+	queue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	m_fence->Signal(queue, ++m_fenceValue);
 }
 
 void DXRenderContext::ClearRTV(DXDescriptorHandle rtv, XMFLOAT4 color)
@@ -91,7 +103,7 @@ void DXRenderContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology)
 	m_commandList->IASetPrimitiveTopology(topology);
 }
 
-void DXRenderContext::SetVertexBuffer(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb)
+void DXRenderContext::SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb)
 {
 	m_commandList->IASetVertexBuffers(start, count, vb);
 }

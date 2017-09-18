@@ -22,6 +22,8 @@ public:
 	void Init();
 	void Reset(ComPtr<ID3D12CommandQueue> & queue);
 	void Close();
+	void Execute(ComPtr<ID3D12CommandQueue> & queue);
+	void Shutdown(ComPtr<ID3D12CommandQueue> & queue);
 
 	void ClearRTV(DXDescriptorHandle rtv, XMFLOAT4 color);
 	void SetRenderTarget(DXDescriptorHandle rtv);
@@ -34,7 +36,7 @@ public:
 	void SetSRV(DXDescriptorHandle * srvs, u32 count);
 	void SetPSO(ID3D12PipelineState * pso);
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
-	void SetVertexBuffer(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
+	void SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
 	void DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation);
 	void ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 	void ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers);
