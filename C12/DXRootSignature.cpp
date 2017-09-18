@@ -19,11 +19,11 @@ void DXRootSignature::Create(u32 srvCount)
 
 	CD3DX12_DESCRIPTOR_RANGE1 srvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, srvCount, 0);
 
-	std::array<CD3DX12_ROOT_PARAMETER1,4> rootParameters;
-	rootParameters[0].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[1].InitAsConstantBufferView(1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[2].InitAsConstantBufferView(2, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[3].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
+	std::array<CD3DX12_ROOT_PARAMETER1, ERootParamIndex::Count> rootParameters;
+	rootParameters[ERootParamIndex::SRVTable].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[ERootParamIndex::CBGlobal].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[ERootParamIndex::CBEngineObj].InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[ERootParamIndex::CBEnginePass].InitAsConstantBufferView(1, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
 
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;

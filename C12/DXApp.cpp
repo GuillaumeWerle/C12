@@ -4,6 +4,7 @@
 #include "DXRenderer.h"
 #include "DXDescriptorHeapLinear.h"
 #include "DXDescriptorPool.h"
+#include "DXRootSignature.h"
 #include "DXFence.h"
 #include "DXRenderer.h"
 #include "DXBuffer.h"
@@ -217,7 +218,7 @@ void DXApp::Render()
 	m_commandList->ClearRenderTargetView(swapChainRTV.CPU, clearColor, 0, nullptr);
 	m_commandList->OMSetRenderTargets(1, &swapChainRTV.CPU, FALSE, nullptr);
 
-	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature.Get());
+	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature->Get());
 
 	struct cblocal
 	{
@@ -230,7 +231,7 @@ void DXApp::Render()
 	cb.color = XMFLOAT4(1, 0, 0, 1);
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 	memcpy(m.CPU, &cb, sizeof(cb));
-	m_commandList->SetGraphicsRootConstantBufferView(0, m.GPU);
+	m_commandList->SetGraphicsRootConstantBufferView(1, m.GPU);
 
 	DXDescriptorHandle tableSRV = rc.GetCBVSRVUAVHeap()->Alloc(1);
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[] = { m_texture->m_srv.CPU };
@@ -238,7 +239,7 @@ void DXApp::Render()
 	u32 destRanges[1] = { 1 };
 	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, 1, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	m_commandList->SetGraphicsRootDescriptorTable(1, tableSRV.GPU);
+	m_commandList->SetGraphicsRootDescriptorTable(0, tableSRV.GPU);
 
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
 	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);

@@ -3,6 +3,7 @@
 #include "DXFence.h"
 #include "DX.h"
 #include "DXResourceContext.h"
+#include "DXRootSignature.h"
 
 DXRenderContext::DXRenderContext()
 {
@@ -27,7 +28,7 @@ void DXRenderContext::Init()
 	m_commandList->Close();
 }
 
-void DXRenderContext::Begin(ComPtr<ID3D12CommandQueue> & queue)
+void DXRenderContext::Reset(ComPtr<ID3D12CommandQueue> & queue)
 {
 	m_fence->Wait(queue, m_fenceValue);
 	m_fence->Signal(queue, ++m_fenceValue);
@@ -39,12 +40,89 @@ void DXRenderContext::Begin(ComPtr<ID3D12CommandQueue> & queue)
 	m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
-
-void DXRenderContext::End(ComPtr<ID3D12CommandQueue> & queue)
+void DXRenderContext::Close()
 {
 	m_commandList->Close();
+}
 
-	ID3D12CommandList * lists[] = { m_commandList.Get() };
-	queue->ExecuteCommandLists(1, lists);
+void DXRenderContext::ClearRTV(DXDescriptorHandle rtv, XMFLOAT4 color)
+{
+	m_commandList->ClearRenderTargetView(rtv.CPU, (float*)&color, 0, nullptr);
+}
+
+void DXRenderContext::SetRenderTarget(DXDescriptorHandle rtv)
+{
+	m_commandList->OMSetRenderTargets(1, &rtv.CPU, FALSE, nullptr);
+}
+
+void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)
+{
+	m_commandList->SetGraphicsRootSignature(rootSignature->Get());
+}
+
+void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
+{
+	DXUploadContext m = m_resource->AllocCB(size);
+	memcpy(m.CPU, ptr, size);
+	m_commandList->SetGraphicsRootConstantBufferView((UINT)index, m.GPU);
+}
+
+void DXRenderContext::SetSRV(DXDescriptorHandle* srvs, u32 count)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[16] = {};
+	assert(count < _countof(srvHandles));
+	for (u32 i = 0; i < count; i++)
+		srvHandles[i] = srvs[i].CPU;
+
+	DXDescriptorHandle tableSRV = m_resource->GetCBVSRVUAVHeap()->Alloc(count);
+	static u32 destRanges[1] = { count };
+	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, count, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	m_commandList->SetGraphicsRootDescriptorTable(ERootParamIndex::SRVTable, tableSRV.GPU);
+}
+
+void DXRenderContext::SetPSO(ID3D12PipelineState * pso)
+{
+	m_commandList->SetPipelineState(pso);
+}
+
+void DXRenderContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology)
+{
+	m_commandList->IASetPrimitiveTopology(topology);
+}
+
+void DXRenderContext::SetVertexBuffer(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb)
+{
+	m_commandList->IASetVertexBuffers(start, count, vb);
+}
+
+void DXRenderContext::DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation)
+{
+	m_commandList->DrawInstanced(VertexCountPerInstance, InstanceCount, StartVertexLocation, StartInstanceLocation);
+}
+
+void DXRenderContext::ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter)
+{
+	ResourceBarriers(1, &CD3DX12_RESOURCE_BARRIER::Transition(pResource, stateBefore, stateAfter));
+}
+
+void DXRenderContext::ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers)
+{
+	m_commandList->ResourceBarrier(NumBarriers, pBarriers);
+}
+
+void DXRenderContext::SetViewport(const CD3DX12_VIEWPORT & viewport)
+{
+	m_commandList->RSSetViewports(1, &viewport);
+}
+
+void DXRenderContext::SetScissorRect(const CD3DX12_RECT & rect)
+{
+	SetScissorRects(&rect, 1);
+}
+
+void DXRenderContext::SetScissorRects(const CD3DX12_RECT * rects, u32 count)
+{
+	m_commandList->RSSetScissorRects(count, rects);
 }
 

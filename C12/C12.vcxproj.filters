@@ -25,9 +25,6 @@
     <ClInclude Include="DXFence.h" />
     <ClInclude Include="DXShaderCompiler.h" />
     <ClInclude Include="DXShader.h" />
-    <ClInclude Include="data\shaders\basic.hlsl">
-      <Filter>Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="DXBuffer.h" />
     <ClInclude Include="DXHelpers.h" />
     <ClInclude Include="DXResourceContext.h" />
@@ -40,6 +37,7 @@
     <ClInclude Include="DXRootSignature.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="DXRenderContext.h" />
+    <ClInclude Include="data\shaders\basic.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
