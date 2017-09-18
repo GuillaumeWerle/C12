@@ -17,7 +17,7 @@ DXRenderContext::~DXRenderContext()
 
 void DXRenderContext::Shutdown(ComPtr<ID3D12CommandQueue> & queue)
 {
-	m_fence->Sync(queue, ++m_fenceValue);
+	m_fence->Wait(queue, m_fenceValue);
 }
 
 void DXRenderContext::Init()
@@ -79,7 +79,7 @@ void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
 	m_commandList->SetGraphicsRootConstantBufferView((UINT)index, m.GPU);
 }
 
-void DXRenderContext::SetSRV(DXDescriptorHandle* srvs, u32 count)
+void DXRenderContext::SetSRVTable(DXDescriptorHandle* srvs, u32 count)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[16] = {};
 	assert(count < _countof(srvHandles));
@@ -93,7 +93,7 @@ void DXRenderContext::SetSRV(DXDescriptorHandle* srvs, u32 count)
 	m_commandList->SetGraphicsRootDescriptorTable(ERootParamIndex::SRVTable, tableSRV.GPU);
 }
 
-void DXRenderContext::SetPSO(ID3D12PipelineState * pso)
+void DXRenderContext::SetPipelineState(ID3D12PipelineState * pso)
 {
 	m_commandList->SetPipelineState(pso);
 }

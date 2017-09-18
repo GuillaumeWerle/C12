@@ -209,7 +209,7 @@ void DXApp::Render()
 	if (m_texture == nullptr)
 	{
 		m_texture = new DXTexture2D;
-		m_texture->Init( rc->m_commandList );
+		m_texture->Init(rc->m_commandList);
 	}
 
 	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -223,18 +223,18 @@ void DXApp::Render()
 	rc->SetScissorRect(scissorRect);
 
 	rc->SetGraphicRootSignature(m_renderer->m_rootSignature);
-	rc->SetPSO(m_renderer->m_pso.Get());
+	rc->SetPipelineState(m_renderer->m_pso.Get());
 	struct cblocal
 	{
 		XMFLOAT4 color;
 		XMFLOAT4 offset;
 	};
 	cblocal cb;
-	cb.color = XMFLOAT4(1, 0, 0, 1);
+	cb.color = XMFLOAT4(0.5, 0.6, 0.7, 1);
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
-	rc->SetSRV(&m_texture->m_srv, 1);
+	rc->SetSRVTable(&m_texture->m_srv, 1);
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);

@@ -33,8 +33,8 @@ public:
 
 	void SetGraphicRootSignature(DXRootSignature * rootSignature);
 	void SetCB(ERootParamIndex index, void * ptr, u32 size);
-	void SetSRV(DXDescriptorHandle * srvs, u32 count);
-	void SetPSO(ID3D12PipelineState * pso);
+	void SetSRVTable(DXDescriptorHandle * srvs, u32 count);
+	void SetPipelineState(ID3D12PipelineState * pso);
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
 	void SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
 	void DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation);
