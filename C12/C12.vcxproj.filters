@@ -38,6 +38,8 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="DXRenderContext.h" />
     <ClInclude Include="data\shaders\basic.hlsl" />
+    <ClInclude Include="DXUploadable.h" />
+    <ClInclude Include="DXUploader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -60,6 +62,7 @@
     <ClCompile Include="DXRootSignature.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="DXRenderContext.cpp" />
+    <ClCompile Include="DXUploader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

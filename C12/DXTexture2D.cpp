@@ -2,6 +2,7 @@
 #include "DXTexture2D.h"
 #include "DX.h"
 #include "DXHelpers.h"
+#include "DXRenderContext.h"
 
 
 DXTexture2D::DXTexture2D()
@@ -13,7 +14,7 @@ DXTexture2D::~DXTexture2D()
 	DX::PoolSRVCBVUAV->Free(m_srv);
 }
 
-void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
+void DXTexture2D::Init()
 {
 	D3D12_RESOURCE_DESC rdesc = {};
 	rdesc.MipLevels = 1;
@@ -26,6 +27,7 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 	rdesc.SampleDesc.Quality = 0;
 	rdesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	rdesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	m_desc = rdesc;
 
 	DX::Device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -73,11 +75,19 @@ void DXTexture2D::Init(ComPtr<ID3D12GraphicsCommandList> & commandList)
 	void * cpuPtr;
 	m_uploadBuffer->Map(0, &readRange, &cpuPtr);
 	memcpy(cpuPtr, &texture[0], 256*256*4);
+}
+
+void DXTexture2D::Upload(DXRenderContext * rc)
+{
+	UINT64 footPrintTotalBytes = 0;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT placedSubResourceFootprint;
+	UINT rowCount;
+	UINT64 rowPitchInByte;
+	DX::Device->GetCopyableFootprints(&m_desc, 0, 1, 0, &placedSubResourceFootprint, &rowCount, &rowPitchInByte, &footPrintTotalBytes);
 
 	CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), 0);
-	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer.Get(), footPrintLayout);
-	commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-    commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, 
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE));
+	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer.Get(), placedSubResourceFootprint);
+	rc->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+	rc->ResourceBarrier(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 }
 

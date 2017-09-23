@@ -40,8 +40,14 @@ public:
 	void DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation);
 	void ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 	void ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers);
+	void CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst, UINT DstX, UINT DstY, UINT DstZ, const D3D12_TEXTURE_COPY_LOCATION *pSrc, const D3D12_BOX *pSrcBox);
 
 	DXRenderContext();
 	~DXRenderContext();
+
+
+private:
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> m_tmpSrvHandles;
+
 };
 

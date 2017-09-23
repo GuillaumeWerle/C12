@@ -13,6 +13,8 @@ DXRootSignature::~DXRootSignature()
 
 void DXRootSignature::Create(u32 srvCount)
 {
+	m_srvCount = srvCount;
+
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { D3D_ROOT_SIGNATURE_VERSION_1_1 };
 	if (FAILED(DX::Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;

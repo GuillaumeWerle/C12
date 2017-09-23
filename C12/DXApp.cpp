@@ -29,6 +29,8 @@ DXApp::~DXApp()
 		delete m_renderContext[i];
 	}
 
+	delete DX::Uploader;
+
 	delete m_timer;
 	delete m_texture;
 	delete m_renderer;
@@ -116,6 +118,8 @@ void DXApp::Init(HWND hWnd)
 	DX::PoolRTV = new DXDescriptorPool;
 	DX::PoolRTV->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1024, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
+	DX::Uploader = new DXUploader;
+
 	InitSwapChain(hWnd);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
@@ -133,6 +137,12 @@ void DXApp::Init(HWND hWnd)
 	{
 		m_renderContext[i] = new DXRenderContext;
 		m_renderContext[i]->Init();
+	}
+
+	{
+		m_texture = new DXTexture2D;
+		m_texture->Init();
+		DX::Uploader->RequestUpload(m_texture);
 	}
 
 }
@@ -191,6 +201,7 @@ void DXApp::InitSwapChain(HWND hWnd)
 		DX::Device->CreateRenderTargetView(m_swapChainBuffers[bufferIndex].Get(), nullptr, m_swapChainRTVs[bufferIndex].CPU);
 	}
 
+
 }
 
 void DXApp::Update()
@@ -206,11 +217,7 @@ void DXApp::Render()
 	DXRenderContext * rc = m_renderContext[m_frameIndex];
 	rc->Reset(m_commandQueue);
 
-	if (m_texture == nullptr)
-	{
-		m_texture = new DXTexture2D;
-		m_texture->Init(rc->m_commandList);
-	}
+	DX::Uploader->ExecuteUploadRequests(rc);
 
 	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
@@ -230,7 +237,7 @@ void DXApp::Render()
 		XMFLOAT4 offset;
 	};
 	cblocal cb;
-	cb.color = XMFLOAT4(0.5, 0.6, 0.7, 1);
+	cb.color = XMFLOAT4(0.5f, 0.6f, 0.7f, 1.0f);
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
@@ -251,83 +258,84 @@ void DXApp::Render()
 
 }
 
-void DXApp::Render__()
-{
-	if (DX::Device == nullptr)
-		return;
-
-	DXResourceContext & rc = m_resourceContexts[m_frameIndex];
-	m_rc = &rc;
-	rc.Reset();
-
-	m_commandAllocator->Reset();
-	m_commandList->Reset(m_commandAllocator.Get(), m_psoNull.Get());
-
-	if (m_texture == nullptr)
-	{
-		m_texture = new DXTexture2D;
-		m_texture->Init(m_commandList);
-	}
-
-	ID3D12DescriptorHeap* ppHeaps[] = { rc.GetCBVSRVUAVHeap()->m_heap.Get() };
-	m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
-	// Indicate that the back buffer will be used as a render target.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
-	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainBuffersDescriptorHeap->GetCpuHandle(m_frameIndex);
-	DXDescriptorHandle & swapChainRTV = m_swapChainRTVs[m_frameIndex];
-
-	// Record commands.
-	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	m_commandList->ClearRenderTargetView(swapChainRTV.CPU, clearColor, 0, nullptr);
-	m_commandList->OMSetRenderTargets(1, &swapChainRTV.CPU, FALSE, nullptr);
-
-	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature->Get());
-
-	struct cblocal
-	{
-		XMFLOAT4 color;
-		XMFLOAT4 offset;
-	};
-
-	DXUploadContext m = rc.AllocCB(sizeof(cblocal));
-	cblocal cb;
-	cb.color = XMFLOAT4(1, 0, 0, 1);
-	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
-	memcpy(m.CPU, &cb, sizeof(cb));
-	m_commandList->SetGraphicsRootConstantBufferView(1, m.GPU);
-
-	DXDescriptorHandle tableSRV = rc.GetCBVSRVUAVHeap()->Alloc(1);
-	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[] = { m_texture->m_srv.CPU };
-
-	u32 destRanges[1] = { 1 };
-	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, 1, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	m_commandList->SetGraphicsRootDescriptorTable(0, tableSRV.GPU);
-
-	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
-	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
-
-	m_commandList->RSSetViewports(1, &viewport);
-	m_commandList->RSSetScissorRects(1, &scissorRect);
-	m_commandList->SetPipelineState(m_renderer->m_pso.Get());
-	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_commandList->IASetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
-	m_commandList->DrawInstanced(3, 1, 0, 0);
-
-	// Indicate that the back buffer will now be used to present.
-	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-	m_commandList->Close();
-
-	// Execute the command list.
-	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-	// Present the frame.
-	m_swapChain->Present(1, 0);
-
-	m_fenceValue++;
-	m_fence->Sync(m_commandQueue, m_fenceValue);
-	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-}
+//void DXApp::Render__()
+//{
+//	if (DX::Device == nullptr)
+//		return;
+//
+//	DXResourceContext & rc = m_resourceContexts[m_frameIndex];
+//	m_rc = &rc;
+//	rc.Reset();
+//
+//	m_commandAllocator->Reset();
+//	m_commandList->Reset(m_commandAllocator.Get(), m_psoNull.Get());
+//
+//	if (m_texture == nullptr)
+//	{
+//		m_texture = new DXTexture2D;
+//		m_texture->Init();
+//		m_texture->Upload(&rc);
+//	}
+//
+//	ID3D12DescriptorHeap* ppHeaps[] = { rc.GetCBVSRVUAVHeap()->m_heap.Get() };
+//	m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+//
+//	// Indicate that the back buffer will be used as a render target.
+//	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+//
+//	//CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_swapChainBuffersDescriptorHeap->GetCpuHandle(m_frameIndex);
+//	DXDescriptorHandle & swapChainRTV = m_swapChainRTVs[m_frameIndex];
+//
+//	// Record commands.
+//	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+//	m_commandList->ClearRenderTargetView(swapChainRTV.CPU, clearColor, 0, nullptr);
+//	m_commandList->OMSetRenderTargets(1, &swapChainRTV.CPU, FALSE, nullptr);
+//
+//	m_commandList->SetGraphicsRootSignature(m_renderer->m_rootSignature->Get());
+//
+//	struct cblocal
+//	{
+//		XMFLOAT4 color;
+//		XMFLOAT4 offset;
+//	};
+//
+//	DXUploadContext m = rc.AllocCB(sizeof(cblocal));
+//	cblocal cb;
+//	cb.color = XMFLOAT4(1, 0, 0, 1);
+//	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
+//	memcpy(m.CPU, &cb, sizeof(cb));
+//	m_commandList->SetGraphicsRootConstantBufferView(1, m.GPU);
+//
+//	DXDescriptorHandle tableSRV = rc.GetCBVSRVUAVHeap()->Alloc(1);
+//	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[] = { m_texture->m_srv.CPU };
+//
+//	u32 destRanges[1] = { 1 };
+//	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+//	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, 1, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+//	m_commandList->SetGraphicsRootDescriptorTable(0, tableSRV.GPU);
+//
+//	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
+//	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
+//
+//	m_commandList->RSSetViewports(1, &viewport);
+//	m_commandList->RSSetScissorRects(1, &scissorRect);
+//	m_commandList->SetPipelineState(m_renderer->m_pso.Get());
+//	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//	m_commandList->IASetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
+//	m_commandList->DrawInstanced(3, 1, 0, 0);
+//
+//	// Indicate that the back buffer will now be used to present.
+//	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+//	m_commandList->Close();
+//
+//	// Execute the command list.
+//	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+//	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+//
+//	// Present the frame.
+//	m_swapChain->Present(1, 0);
+//
+//	m_fenceValue++;
+//	m_fence->Sync(m_commandQueue, m_fenceValue);
+//	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+//}

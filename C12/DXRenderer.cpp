@@ -23,7 +23,7 @@ void DXRenderer::Init()
 	// Create the root signature.
 	{
 		m_rootSignature = new DXRootSignature;
-		m_rootSignature->Create(1);
+		m_rootSignature->Create(16);
 
 		//D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 

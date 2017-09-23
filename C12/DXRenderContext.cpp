@@ -70,6 +70,11 @@ void DXRenderContext::SetRenderTarget(DXDescriptorHandle rtv)
 void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)
 {
 	m_commandList->SetGraphicsRootSignature(rootSignature->Get());
+	m_tmpSrvHandles.resize(rootSignature->GetSrvCount());
+	D3D12_CPU_DESCRIPTOR_HANDLE emptyHandle;
+	emptyHandle.ptr = 0;
+	for (auto & h : m_tmpSrvHandles)
+		h = emptyHandle;
 }
 
 void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
@@ -81,15 +86,21 @@ void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
 
 void DXRenderContext::SetSRVTable(DXDescriptorHandle* srvs, u32 count)
 {
-	D3D12_CPU_DESCRIPTOR_HANDLE srvHandles[16] = {};
-	assert(count < _countof(srvHandles));
-	for (u32 i = 0; i < count; i++)
-		srvHandles[i] = srvs[i].CPU;
+	assert(count < m_tmpSrvHandles.size());
 
-	DXDescriptorHandle tableSRV = m_resource->GetCBVSRVUAVHeap()->Alloc(count);
-	static u32 destRanges[1] = { count };
-	static const u32 DescriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, count, srvHandles, DescriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// copy the SRVs to the temporary storage
+	for (u32 i = 0; i < count; i++)
+		m_tmpSrvHandles[i] = srvs[i].CPU;
+
+	// fill the rest of the temporary storage if needed
+	for (u32 i = count; i < m_tmpSrvHandles.size(); i++)
+		m_tmpSrvHandles[i] = srvs[0].CPU;
+
+	DXDescriptorHandle tableSRV = m_resource->GetCBVSRVUAVHeap()->Alloc((u32)m_tmpSrvHandles.size());
+	u32 destRanges[] = { (u32)m_tmpSrvHandles.size() };
+	static const u32 descriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+	assert(_countof(descriptorCopyRanges) > m_tmpSrvHandles.size());
+	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, (u32)m_tmpSrvHandles.size(), &m_tmpSrvHandles[0], descriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	m_commandList->SetGraphicsRootDescriptorTable(ERootParamIndex::SRVTable, tableSRV.GPU);
 }
 
@@ -121,6 +132,11 @@ void DXRenderContext::ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_
 void DXRenderContext::ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers)
 {
 	m_commandList->ResourceBarrier(NumBarriers, pBarriers);
+}
+
+void DXRenderContext::CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst, UINT DstX, UINT DstY, UINT DstZ, const D3D12_TEXTURE_COPY_LOCATION *pSrc, const D3D12_BOX *pSrcBox)
+{
+	m_commandList->CopyTextureRegion(pDst, DstX, DstY, DstZ, pSrc, pSrcBox);
 }
 
 void DXRenderContext::SetViewport(const CD3DX12_VIEWPORT & viewport)

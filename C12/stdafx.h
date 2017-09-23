@@ -38,6 +38,7 @@ using namespace DirectX;
 #include <array>
 #include <stack>
 #include <memory>
+#include <mutex>
 
 #include "Types.h"
 #include "Utils.h"

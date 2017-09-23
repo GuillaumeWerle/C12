@@ -163,6 +163,8 @@
     <ClInclude Include="DXShader.h" />
     <ClInclude Include="DXShaderCompiler.h" />
     <ClInclude Include="DXTexture2D.h" />
+    <ClInclude Include="DXUploadable.h" />
+    <ClInclude Include="DXUploader.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Resource.h" />
@@ -186,6 +188,7 @@
     <ClCompile Include="DXShader.cpp" />
     <ClCompile Include="DXShaderCompiler.cpp" />
     <ClCompile Include="DXTexture2D.cpp" />
+    <ClCompile Include="DXUploader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="stdafx.cpp">
