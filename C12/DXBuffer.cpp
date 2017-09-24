@@ -48,8 +48,11 @@ void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte)
 
 	HRESULT hr;
 	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_buffer)));
-
-	D3D12_RANGE readRange = {};
-	m_buffer->Map(0, &readRange, (void**)&m_cpuPtr);
 	m_gpuPtr = m_buffer->GetGPUVirtualAddress();
+
+	if (heapType == D3D12_HEAP_TYPE_UPLOAD)
+	{
+		D3D12_RANGE readRange = {};
+		m_buffer->Map(0, &readRange, (void**)&m_cpuPtr);
+	}
 }

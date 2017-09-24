@@ -7,6 +7,7 @@
 
 DXRenderContext::DXRenderContext()
 {
+	//m_tmpVertexStreamSrvHandles.resize((size_t)EVertexSteam::Count);
 }
 
 DXRenderContext::~DXRenderContext()
@@ -70,7 +71,8 @@ void DXRenderContext::SetRenderTarget(DXDescriptorHandle rtv)
 void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)
 {
 	m_commandList->SetGraphicsRootSignature(rootSignature->Get());
-	m_tmpSrvHandles.resize(rootSignature->GetSrvCount());
+	u32 srvTableSize = Max<u32>(rootSignature->GetSrvCount(), (u32)EVertexSteam::Count);
+	m_tmpSrvHandles.resize(srvTableSize);
 	D3D12_CPU_DESCRIPTOR_HANDLE emptyHandle;
 	emptyHandle.ptr = 0;
 	for (auto & h : m_tmpSrvHandles)
@@ -84,7 +86,7 @@ void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
 	m_commandList->SetGraphicsRootConstantBufferView((UINT)index, m.GPU);
 }
 
-void DXRenderContext::SetSRVTable(DXDescriptorHandle* srvs, u32 count)
+void DXRenderContext::SetDescriptorTable(ERootParamIndex index, DXDescriptorHandle * srvs, u32 count)
 {
 	assert(count < m_tmpSrvHandles.size());
 
@@ -101,8 +103,28 @@ void DXRenderContext::SetSRVTable(DXDescriptorHandle* srvs, u32 count)
 	static const u32 descriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	assert(_countof(descriptorCopyRanges) > m_tmpSrvHandles.size());
 	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, (u32)m_tmpSrvHandles.size(), &m_tmpSrvHandles[0], descriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	m_commandList->SetGraphicsRootDescriptorTable(ERootParamIndex::SRVTable, tableSRV.GPU);
+	m_commandList->SetGraphicsRootDescriptorTable((u32)index, tableSRV.GPU);
 }
+
+//void DXRenderContext::SetVertexStreamsSRVTable(DXDescriptorHandle * srvs, u32 count)
+//{
+//	assert(count < m_tmpVertexStreamSrvHandles.size());
+//
+//	// copy the SRVs to the temporary storage
+//	for (u32 i = 0; i < count; i++)
+//		m_tmpVertexStreamSrvHandles[i] = srvs[i].CPU;
+//
+//	// fill the rest of the temporary storage if needed
+//	for (u32 i = count; i < m_tmpVertexStreamSrvHandles.size(); i++)
+//		m_tmpVertexStreamSrvHandles[i] = srvs[0].CPU;
+//
+//	DXDescriptorHandle tableSRV = m_resource->GetCBVSRVUAVHeap()->Alloc((u32)m_tmpVertexStreamSrvHandles.size());
+//	u32 destRanges[] = { (u32)m_tmpVertexStreamSrvHandles.size() };
+//	static const u32 descriptorCopyRanges[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+//	assert(_countof(descriptorCopyRanges) > m_tmpVertexStreamSrvHandles.size());
+//	DX::Device->CopyDescriptors(1, &tableSRV.CPU, destRanges, (u32)m_tmpVertexStreamSrvHandles.size(), &m_tmpVertexStreamSrvHandles[0], descriptorCopyRanges, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+//	m_commandList->SetGraphicsRootDescriptorTable((u32)ERootParamIndex::VertexStreamsSRVTable, tableSRV.GPU);
+//}
 
 void DXRenderContext::SetPipelineState(ID3D12PipelineState * pso)
 {
@@ -137,6 +159,11 @@ void DXRenderContext::ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER 
 void DXRenderContext::CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst, UINT DstX, UINT DstY, UINT DstZ, const D3D12_TEXTURE_COPY_LOCATION *pSrc, const D3D12_BOX *pSrcBox)
 {
 	m_commandList->CopyTextureRegion(pDst, DstX, DstY, DstZ, pSrc, pSrcBox);
+}
+
+void DXRenderContext::CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT64 NumBytes)
+{
+	m_commandList->CopyBufferRegion(pDstBuffer, DstOffset, pSrcBuffer, SrcOffset, NumBytes);
 }
 
 void DXRenderContext::SetViewport(const CD3DX12_VIEWPORT & viewport)

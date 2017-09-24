@@ -5,14 +5,17 @@
 #include "DXShader.h"
 #include "DXShaderCompiler.h"
 #include "DXRootSignature.h"
+#include "DXVertexSRVStream.h"
 
 DXRenderer::DXRenderer()
 {
 	m_rootSignature = nullptr;
+	m_streamPos = nullptr;
 }
 
 DXRenderer::~DXRenderer()
 {
+	delete m_streamPos;
 	delete m_rootSignature;
 }
 
@@ -21,50 +24,8 @@ void DXRenderer::Init()
 	HRESULT hr = 0;
 
 	// Create the root signature.
-	{
-		m_rootSignature = new DXRootSignature;
-		m_rootSignature->Create(16);
-
-		//D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-
-		//// This is the highest version the sample supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
-		//featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-
-		//if (FAILED(DX::Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-		//{
-		//	featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-		//}
-
-		//CD3DX12_DESCRIPTOR_RANGE1 rangeSRV[1];
-		//rangeSRV[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
-
-		//CD3DX12_ROOT_PARAMETER1 rootParameters[2];
-		//rootParameters[0].InitAsDescriptorTable(_countof(rangeSRV), &rangeSRV[0], D3D12_SHADER_VISIBILITY_PIXEL);
-		//rootParameters[1].InitAsConstantBufferView(0);
-
-		//D3D12_STATIC_SAMPLER_DESC sampler = {};
-		//sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		//sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		//sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		//sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-		//sampler.MipLODBias = 0;
-		//sampler.MaxAnisotropy = 0;
-		//sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-		//sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-		//sampler.MinLOD = 0.0f;
-		//sampler.MaxLOD = D3D12_FLOAT32_MAX;
-		//sampler.ShaderRegister = 0;
-		//sampler.RegisterSpace = 0;
-		//sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-		//CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		//rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-		//ComPtr<ID3DBlob> signature;
-		//ComPtr<ID3DBlob> error;
-		//CHECK_D3DOK(hr, D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
-		//CHECK_D3DOK(hr, DX::Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
-	}
+	m_rootSignature = new DXRootSignature;
+	m_rootSignature->Create(16);
 
 	// Define the vertex input layout.
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
@@ -118,8 +79,12 @@ void DXRenderer::Init()
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
 
 		XMFLOAT3 positions[] = { { 0.0f, 0.25f, 0.0f }, { 0.25f, -0.25f, 0.0f }, { -0.25f, -0.25f, 0.0f } };
-	}
 
+		m_streamPos = new DXVertexSRVStream;
+		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3));
+		memcpy(m_streamPos->Map(), positions, sizeof(positions));
+		DX::Uploader->RequestUpload(m_streamPos);
+	}
 
 	// Constant buffer
 	/*{

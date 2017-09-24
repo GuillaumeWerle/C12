@@ -26,7 +26,8 @@ public:
 
 	void SetGraphicRootSignature(DXRootSignature * rootSignature);
 	void SetCB(ERootParamIndex index, void * ptr, u32 size);
-	void SetSRVTable(DXDescriptorHandle * srvs, u32 count);
+	void SetDescriptorTable(ERootParamIndex index, DXDescriptorHandle * srvs, u32 count);
+	void SetVertexStreamsSRVTable(DXDescriptorHandle * srvs, u32 count);
 	void SetPipelineState(ID3D12PipelineState * pso);
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
 	void SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
@@ -34,6 +35,7 @@ public:
 	void ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 	void ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers);
 	void CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst, UINT DstX, UINT DstY, UINT DstZ, const D3D12_TEXTURE_COPY_LOCATION *pSrc, const D3D12_BOX *pSrcBox);
+	void CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT64 NumBytes);
 
 	DXRenderContext();
 	~DXRenderContext();
@@ -48,5 +50,6 @@ private:
 	ComPtr<ID3D12PipelineState> m_psoNull;
 
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> m_tmpSrvHandles;
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> m_tmpVertexStreamSrvHandles;
 };
 

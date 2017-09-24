@@ -1,11 +1,20 @@
 #pragma once
 
-enum ERootParamIndex
+enum class ERootParamIndex : std::uint32_t
 {
 	SRVTable,
 	CBGlobal,
 	CBEngineObj,
 	CBEnginePass,
+	VertexStreamsSRVTable,
+	Count
+};
+
+enum class EVertexSteam : std::uint32_t
+{
+	Positions,
+	Normals,
+	UV0,
 	Count
 };
 

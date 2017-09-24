@@ -9,6 +9,7 @@
 #include "DXRenderer.h"
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
+#include "DXVertexSRVStream.h"
 #include "Timer.h"
 #include "DXRenderContext.h"
 #include "MasterRenderThread.h"
@@ -241,7 +242,9 @@ void DXApp::Render()
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
-	rc->SetSRVTable(&m_texture->m_srv, 1);
+	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->m_srv, 1);
+	rc->SetDescriptorTable(ERootParamIndex::VertexStreamsSRVTable, &m_renderer->m_streamPos->m_srv, 1);
+
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);

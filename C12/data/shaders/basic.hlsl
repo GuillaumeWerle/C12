@@ -16,20 +16,23 @@ struct PSInput
 	float4 color : COLOR;
 };
 
-cbuffer cb : register(b0,space0)
+cbuffer cb : register(b0, space0)
 {
 	float4 g_color;
 	float4 g_offset;
 }
 
-Texture2D g_Albedo : register(t0);
+Buffer<float3> g_VertexPositions : register(t0, space2);
 
+Texture2D g_Albedo : register(t0);
 SamplerState g_Sampler : register(s0);
 
 
-PSInput VSMain(float4 position : POSITION, float4 color : COLOR, float2 uv : TEXCOORD)
+PSInput VSMain(float4 _position : POSITION, float4 color : COLOR, float2 uv : TEXCOORD, uint vertexId : SV_VERTEXID)
 {
 	PSInput result;
+
+	float4 position = float4(g_VertexPositions[vertexId].xyz, 1.0f);
 
 	result.position = position * float4(3,3,1,1) + g_offset;
 	result.color = color;

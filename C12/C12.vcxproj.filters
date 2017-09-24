@@ -42,6 +42,7 @@
     <ClInclude Include="DXUploader.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="MasterRenderThread.h" />
+    <ClInclude Include="DXVertexSRVStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="DXUploader.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="MasterRenderThread.cpp" />
+    <ClCompile Include="DXVertexSRVStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

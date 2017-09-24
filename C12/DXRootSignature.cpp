@@ -20,12 +20,14 @@ void DXRootSignature::Create(u32 srvCount)
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 
 	CD3DX12_DESCRIPTOR_RANGE1 srvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, srvCount, 0);
+	CD3DX12_DESCRIPTOR_RANGE1 vertexSrvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, (u32)EVertexSteam::Count, 0, 2);
 
-	std::array<CD3DX12_ROOT_PARAMETER1, ERootParamIndex::Count> rootParameters;
-	rootParameters[ERootParamIndex::SRVTable].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
-	rootParameters[ERootParamIndex::CBGlobal].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[ERootParamIndex::CBEngineObj].InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[ERootParamIndex::CBEnginePass].InitAsConstantBufferView(1, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	std::array<CD3DX12_ROOT_PARAMETER1, (u32)ERootParamIndex::Count> rootParameters;
+	rootParameters[(u32)ERootParamIndex::SRVTable].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
+	rootParameters[(u32)ERootParamIndex::CBGlobal].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[(u32)ERootParamIndex::CBEngineObj].InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[(u32)ERootParamIndex::CBEnginePass].InitAsConstantBufferView(1, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
+	rootParameters[(u32)ERootParamIndex::VertexStreamsSRVTable].InitAsDescriptorTable(1, &vertexSrvRange, D3D12_SHADER_VISIBILITY_VERTEX);
 
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
