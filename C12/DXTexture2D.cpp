@@ -42,14 +42,13 @@ void DXTexture2D::Init()
 	m_srv = DX::PoolSRVCBVUAV->Alloc();
 	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
 
-	UINT64 footPrintTotalBytes = 0;
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrintLayout;
 	UINT numRows;
 	UINT64 rowSizeInBytes;
-	DX::Device->GetCopyableFootprints(&rdesc, 0, 1, 0, &footPrintLayout, &numRows, &rowSizeInBytes, &footPrintTotalBytes);
+	DX::Device->GetCopyableFootprints(&rdesc, 0, 1, 0, &footPrintLayout, &numRows, &rowSizeInBytes, &m_footPrintTotalBytes);
 
 	m_uploadBuffer = new DXBuffer;
-	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, footPrintTotalBytes);
+	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
 
 	std::vector<u32> texture;
 	texture.resize(256*256);
