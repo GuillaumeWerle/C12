@@ -19,6 +19,9 @@ public:
 
 
 	void Init();
+
+	void CreateFromDesc(const D3D12_RESOURCE_DESC & rdesc);
+
 	virtual void Upload(DXRenderContext * rc) override;
 
 	DXTexture2D();

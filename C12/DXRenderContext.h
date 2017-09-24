@@ -9,13 +9,6 @@ class DXResourceContext;
 class DXRenderContext
 {
 public:
-	DXFence * m_fence = nullptr;
-	u64 m_fenceValue = 0;
-	DXResourceContext * m_resource = nullptr;
-
-	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
-	ComPtr<ID3D12GraphicsCommandList> m_commandList;
-	ComPtr<ID3D12PipelineState> m_psoNull;
 
 	ID3D12GraphicsCommandList * GetCommandList() { return m_commandList.Get(); }
 
@@ -45,9 +38,15 @@ public:
 	DXRenderContext();
 	~DXRenderContext();
 
-
 private:
-	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> m_tmpSrvHandles;
+	DXFence * m_fence = nullptr;
+	u64 m_fenceValue = 0;
+	DXResourceContext * m_resource = nullptr;
 
+	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
+	ComPtr<ID3D12GraphicsCommandList> m_commandList;
+	ComPtr<ID3D12PipelineState> m_psoNull;
+
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> m_tmpSrvHandles;
 };
 

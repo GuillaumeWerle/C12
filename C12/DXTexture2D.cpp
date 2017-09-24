@@ -5,7 +5,6 @@
 #include "DXRenderContext.h"
 #include "DXBuffer.h"
 #include "DirectXTex/DirectXTex/DirectXTex.h"
-#include <limits>
 
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex\\DirectXTex\\Bin\\Desktop_2015\\x64\\Debug\\DirectXTex.lib")
@@ -44,27 +43,8 @@ void DXTexture2D::Init()
 	rdesc.SampleDesc.Quality = 0;
 	rdesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	rdesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	m_desc = rdesc;
 
-	DX::Device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-		D3D12_HEAP_FLAG_NONE,
-		&rdesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(&m_resource));
-
-	m_srv = DX::PoolSRVCBVUAV->Alloc();
-	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
-
-	m_footPrintLayouts.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	m_numRows.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	DX::Device->GetCopyableFootprints(&rdesc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
-
-	m_uploadBuffer = new DXBuffer;
-	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
-	//memset(m_uploadBuffer->m_cpuPtr, 0x01f, m_footPrintTotalBytes);
+	CreateFromDesc(rdesc);
 
 	u32 subresourceIndex = 0;
 	for (u32 arrayIndex = 0; arrayIndex < m_desc.DepthOrArraySize; arrayIndex++)
@@ -87,6 +67,30 @@ void DXTexture2D::Init()
 			 }
 		}
 	}
+}
+
+void DXTexture2D::CreateFromDesc(const D3D12_RESOURCE_DESC & rdesc)
+{
+	m_desc = rdesc;
+
+	DX::Device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		&rdesc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr,
+		IID_PPV_ARGS(&m_resource));
+
+	m_srv = DX::PoolSRVCBVUAV->Alloc();
+	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
+
+	m_footPrintLayouts.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	m_numRows.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	DX::Device->GetCopyableFootprints(&rdesc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
+
+	m_uploadBuffer = new DXBuffer;
+	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
 }
 
 void DXTexture2D::Upload(DXRenderContext * rc)
