@@ -6,15 +6,15 @@ enum class ERootParamIndex : std::uint32_t
 	CBGlobal,
 	CBEngineObj,
 	CBEnginePass,
-	VertexStreamsSRVTable,
+	SRVVertexStreamsTable,
 	Count
 };
 
 enum class EVertexSteam : std::uint32_t
 {
-	Positions,
-	Normals,
-	UV0,
+	Position,
+	UV,
+	Color,
 	Count
 };
 

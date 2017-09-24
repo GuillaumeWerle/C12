@@ -53,7 +53,7 @@ void DXTexture2D::Init()
 		{
 			const Image * img = scratch.GetImage(mipIndex, arrayIndex, 0);
 
-			u8* destPtr = m_uploadBuffer->m_cpuPtr + m_footPrintLayouts[subresourceIndex].Offset;
+			u8* destPtr = m_uploadBuffer->Map() + m_footPrintLayouts[subresourceIndex].Offset;
 			u8* srcPtr = img->pixels;
 
 			u64 destPitch = m_footPrintLayouts[subresourceIndex].Footprint.RowPitch;
@@ -98,7 +98,7 @@ void DXTexture2D::Upload(DXRenderContext * rc)
 	for (u32 subresourceIndex = 0; subresourceIndex < m_footPrintLayouts.size(); subresourceIndex++)
 	{
 		CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), subresourceIndex);
-		CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer->m_buffer.Get(), m_footPrintLayouts[subresourceIndex]);
+		CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer->GetResource(), m_footPrintLayouts[subresourceIndex]);
 		rc->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
 	}
 	rc->ResourceBarrier(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);

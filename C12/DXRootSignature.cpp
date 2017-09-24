@@ -27,7 +27,7 @@ void DXRootSignature::Create(u32 srvCount)
 	rootParameters[(u32)ERootParamIndex::CBGlobal].InitAsConstantBufferView(0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
 	rootParameters[(u32)ERootParamIndex::CBEngineObj].InitAsConstantBufferView(0, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
 	rootParameters[(u32)ERootParamIndex::CBEnginePass].InitAsConstantBufferView(1, 1, D3D12_ROOT_DESCRIPTOR_FLAG_NONE);
-	rootParameters[(u32)ERootParamIndex::VertexStreamsSRVTable].InitAsDescriptorTable(1, &vertexSrvRange, D3D12_SHADER_VISIBILITY_VERTEX);
+	rootParameters[(u32)ERootParamIndex::SRVVertexStreamsTable].InitAsDescriptorTable(1, &vertexSrvRange, D3D12_SHADER_VISIBILITY_VERTEX);
 
 	D3D12_STATIC_SAMPLER_DESC sampler = {};
 	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;

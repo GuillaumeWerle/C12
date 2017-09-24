@@ -1,20 +1,20 @@
 #include "stdafx.h"
-#include "DXVertexSRVStream.h"
+#include "DXStructuredBuffer.h"
 #include "DXBuffer.h"
 #include "DX.h"
 #include "DXRenderContext.h"
 
-DXVertexSRVStream::DXVertexSRVStream()
+DXStructuredBuffer::DXStructuredBuffer()
 {
 }
 
-DXVertexSRVStream::~DXVertexSRVStream()
+DXStructuredBuffer::~DXStructuredBuffer()
 {
 	delete m_upload;
 	delete m_commited;
 }
 
-void DXVertexSRVStream::Init(u32 count, u32 stride)
+void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
 {
 	m_upload = new DXBuffer;
 	m_upload->Init(D3D12_HEAP_TYPE_UPLOAD, count * stride);
@@ -33,16 +33,23 @@ void DXVertexSRVStream::Init(u32 count, u32 stride)
 	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	m_srvDesc = desc;
-	DX::Device->CreateShaderResourceView(m_commited->m_buffer.Get(), &desc, m_srv.CPU);
-	DX::Device->GetCopyableFootprints(&m_upload->m_desc, 0, 1, 0, &m_placedFootprint, &m_rowCount, &m_pitchInBytes, &m_totalBytes);
+	DX::Device->CreateShaderResourceView(m_commited->GetResource(), &desc, m_srv.CPU);
+
+	DX::Device->GetCopyableFootprints(&m_upload->GetDesc(), 0, 1, 0, &m_placedFootprint, &m_rowCount, &m_pitchInBytes, &m_totalBytes);
+
+	if (data)
+	{
+		memcpy(Map(), data,  count * stride);
+		DX::Uploader->RequestUpload(this);
+	}
 }
 
-u8 * DXVertexSRVStream::Map()
+u8 * DXStructuredBuffer::Map()
 {
-	return m_upload->m_cpuPtr;
+	return m_upload->Map();
 }
 
-void DXVertexSRVStream::Upload(DXRenderContext * rc)
+void DXStructuredBuffer::Upload(DXRenderContext * rc)
 {
-	rc->CopyBufferRegion(m_commited->m_buffer.Get(), 0, m_upload->m_buffer.Get(), 0, m_totalBytes);
+	rc->CopyBufferRegion(m_commited->GetResource(), 0, m_upload->GetResource(), 0, m_totalBytes);
 }

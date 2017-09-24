@@ -5,7 +5,7 @@
 #include "DXShader.h"
 #include "DXShaderCompiler.h"
 #include "DXRootSignature.h"
-#include "DXVertexSRVStream.h"
+#include "DXStructuredBuffer.h"
 
 DXRenderer::DXRenderer()
 {
@@ -80,10 +80,8 @@ void DXRenderer::Init()
 
 		XMFLOAT3 positions[] = { { 0.0f, 0.25f, 0.0f }, { 0.25f, -0.25f, 0.0f }, { -0.25f, -0.25f, 0.0f } };
 
-		m_streamPos = new DXVertexSRVStream;
-		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3));
-		memcpy(m_streamPos->Map(), positions, sizeof(positions));
-		DX::Uploader->RequestUpload(m_streamPos);
+		m_streamPos = new DXStructuredBuffer;
+		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3), positions);
 	}
 
 	// Constant buffer

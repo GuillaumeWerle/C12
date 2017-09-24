@@ -45,8 +45,8 @@ void DXResourceContext::Reset()
 	for (auto & heap : m_descriptorHeaps)
 		heap->Reset();
 
-	m_uploadCurrent.CPU = m_uploadBuffer->m_cpuPtr;
-	m_uploadCurrent.GPU = m_uploadBuffer->m_gpuPtr;
+	m_uploadCurrent.CPU = m_uploadBuffer->Map();
+	m_uploadCurrent.GPU = m_uploadBuffer->GetGPUVirtualAddress();
 }
 
 DXUploadContext DXResourceContext::AllocFromUploadHeap(u32 size)

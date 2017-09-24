@@ -17,7 +17,5 @@ public:
 	MasterRenderThread(DXApp * app);
 	~MasterRenderThread();
 
-
-
 };
 

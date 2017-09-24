@@ -4,18 +4,18 @@
 
 class DXBuffer;
 
-class DXVertexSRVStream : public DXUploadable
+class DXStructuredBuffer : public DXUploadable
 {
 public:
 	DXDescriptorHandle m_srv;
 
-	void Init(u32 count, u32 stride);
+	void Init(u32 count, u32 stride, void * data = nullptr);
 	u8 * Map();
 
 	virtual void Upload(DXRenderContext * rc) override;
 
-	DXVertexSRVStream();
-	~DXVertexSRVStream();
+	DXStructuredBuffer();
+	~DXStructuredBuffer();
 
 protected:
 	DXBuffer * m_upload = nullptr;

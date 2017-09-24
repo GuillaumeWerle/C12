@@ -3,7 +3,7 @@
 
 class DXBuffer;
 class DXRootSignature;
-class DXVertexSRVStream;
+class DXStructuredBuffer;
 
 class DXRenderer
 {
@@ -14,7 +14,7 @@ public:
 	ComPtr<ID3D12PipelineState> m_pso;
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-	DXVertexSRVStream * m_streamPos;
+	DXStructuredBuffer * m_streamPos;
 
 	//DXBuffer * m_cb;
 

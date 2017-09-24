@@ -9,7 +9,7 @@
 #include "DXRenderer.h"
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
-#include "DXVertexSRVStream.h"
+#include "DXStructuredBuffer.h"
 #include "Timer.h"
 #include "DXRenderContext.h"
 #include "MasterRenderThread.h"
@@ -243,7 +243,7 @@ void DXApp::Render()
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
 	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->m_srv, 1);
-	rc->SetDescriptorTable(ERootParamIndex::VertexStreamsSRVTable, &m_renderer->m_streamPos->m_srv, 1);
+	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, &m_renderer->m_streamPos->m_srv, 1);
 
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
