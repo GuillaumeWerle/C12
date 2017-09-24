@@ -7,7 +7,7 @@ public:
 	u8 * m_cpuPtr;
 	D3D12_GPU_VIRTUAL_ADDRESS m_gpuPtr;
 
-	void Init(D3D12_HEAP_TYPE heapType, u32 sizeInByte);
+	void Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte);
 
 	DXBuffer();
 	~DXBuffer();

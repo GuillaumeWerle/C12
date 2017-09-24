@@ -12,28 +12,8 @@ DXBuffer::~DXBuffer()
 {
 }
 
-void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u32 sizeInByte)
+void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte)
 {
-	const D3D12_HEAP_PROPERTIES * heapProperties = nullptr;
-	switch (heapType)
-	{
-	case D3D12_HEAP_TYPE_DEFAULT:
-		heapProperties = DXHelpers::GetDefaultHeapProps();
-		break;
-	case D3D12_HEAP_TYPE_UPLOAD:
-		heapProperties = DXHelpers::GetUploadHeapProps();
-		break;
-	case D3D12_HEAP_TYPE_READBACK:
-		heapProperties = DXHelpers::GetReadbackHeapProps();
-		break;
-	case D3D12_HEAP_TYPE_CUSTOM:
-		assert(0);	// not handled
-		break;
-	default:
-		break;
-	}
-	assert(heapProperties);
-
 	D3D12_RESOURCE_DESC desc = {};
 	desc.Alignment = 0;
 	desc.DepthOrArraySize = 1;
@@ -47,6 +27,24 @@ void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u32 sizeInByte)
 	desc.SampleDesc.Quality = 0;
 	desc.Width = sizeInByte;
 	m_desc = desc;
+
+	const D3D12_HEAP_PROPERTIES * heapProperties = nullptr;
+	switch (heapType)
+	{
+	case D3D12_HEAP_TYPE_DEFAULT:
+		heapProperties = DXHelpers::GetDefaultHeapProps();
+		break;
+	case D3D12_HEAP_TYPE_UPLOAD:
+		heapProperties = DXHelpers::GetUploadHeapProps();
+		break;
+	case D3D12_HEAP_TYPE_READBACK:
+		heapProperties = DXHelpers::GetReadbackHeapProps();
+		break;
+	default:
+	case D3D12_HEAP_TYPE_CUSTOM:
+		assert(0);	// not handled
+		break;
+	}
 
 	HRESULT hr;
 	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_buffer)));

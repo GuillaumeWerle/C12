@@ -12,7 +12,8 @@ void DXDescriptorPool::Init(D3D12_DESCRIPTOR_HEAP_TYPE type, u32 count, D3D12_DE
 
 DXDescriptorHandle DXDescriptorPool::Alloc()
 {
-	assert(m_handles.empty() == false);
+	std::lock_guard<std::mutex> lock(m_mutex);
+	assert(m_handles.empty() == false);	// out of stock ?
 	DXDescriptorHandle h = m_handles.back();
 	m_handles.pop_back();
 	return h;
@@ -20,6 +21,7 @@ DXDescriptorHandle DXDescriptorPool::Alloc()
 
 void DXDescriptorPool::Free(DXDescriptorHandle & handle)
 {
+	std::lock_guard<std::mutex> lock(m_mutex);
 	m_handles.push_back(handle);
 }
 

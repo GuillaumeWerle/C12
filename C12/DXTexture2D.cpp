@@ -3,6 +3,7 @@
 #include "DX.h"
 #include "DXHelpers.h"
 #include "DXRenderContext.h"
+#include "DXBuffer.h"
 
 
 DXTexture2D::DXTexture2D()
@@ -11,6 +12,7 @@ DXTexture2D::DXTexture2D()
 
 DXTexture2D::~DXTexture2D()
 {
+	delete m_uploadBuffer;
 	DX::PoolSRVCBVUAV->Free(m_srv);
 }
 
@@ -46,14 +48,8 @@ void DXTexture2D::Init()
 	UINT64 rowSizeInBytes;
 	DX::Device->GetCopyableFootprints(&rdesc, 0, 1, 0, &footPrintLayout, &numRows, &rowSizeInBytes, &footPrintTotalBytes);
 
-	// Create the GPU upload buffer.
-	DX::Device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-		D3D12_HEAP_FLAG_NONE,
-		&CD3DX12_RESOURCE_DESC::Buffer(footPrintTotalBytes),
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&m_uploadBuffer));
+	m_uploadBuffer = new DXBuffer;
+	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, footPrintTotalBytes);
 
 	std::vector<u32> texture;
 	texture.resize(256*256);
@@ -71,10 +67,12 @@ void DXTexture2D::Init()
 		}
 	}
 
-	D3D12_RANGE readRange = {};
-	void * cpuPtr;
-	m_uploadBuffer->Map(0, &readRange, &cpuPtr);
-	memcpy(cpuPtr, &texture[0], 256*256*4);
+	u8 * cpuPtr = m_uploadBuffer->m_cpuPtr;
+	for (u64 row = 0; row < numRows; row++)
+	{
+		memcpy(cpuPtr, &texture[row * 256], 256 * sizeof(u32));
+		cpuPtr += rowSizeInBytes;
+	}
 }
 
 void DXTexture2D::Upload(DXRenderContext * rc)
@@ -86,7 +84,7 @@ void DXTexture2D::Upload(DXRenderContext * rc)
 	DX::Device->GetCopyableFootprints(&m_desc, 0, 1, 0, &placedSubResourceFootprint, &rowCount, &rowPitchInByte, &footPrintTotalBytes);
 
 	CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), 0);
-	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer.Get(), placedSubResourceFootprint);
+	CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer->m_buffer.Get(), placedSubResourceFootprint);
 	rc->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
 	rc->ResourceBarrier(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
 }

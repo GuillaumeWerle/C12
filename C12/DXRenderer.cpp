@@ -116,7 +116,10 @@ void DXRenderer::Init()
 		m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
 		m_vertexBufferView.StrideInBytes = sizeof(Vertex);
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
+
+		XMFLOAT3 positions[] = { { 0.0f, 0.25f, 0.0f }, { 0.25f, -0.25f, 0.0f }, { -0.25f, -0.25f, 0.0f } };
 	}
+
 
 	// Constant buffer
 	/*{
@@ -130,13 +133,9 @@ void DXRenderer::Init()
 		data->w = 1.0f;
 	}*/
 
-#if defined(_DEBUG)
-	// Enable better shader debugging with the graphics debugging tools.
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
+//	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 	UINT compileFlags = 0;
-#endif
-	
+
 	//ComPtr<ID3DBlob> vertexShader;
 	//ComPtr<ID3DBlob> pixelShader;
 	//ComPtr<ID3DBlob> errorMsg;
