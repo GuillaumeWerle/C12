@@ -15,6 +15,7 @@ public:
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	DXStructuredBuffer * m_streamPos;
+	DXStructuredBuffer * m_streamUV;
 
 	//DXBuffer * m_cb;
 

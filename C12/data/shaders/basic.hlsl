@@ -23,16 +23,18 @@ cbuffer cb : register(b0, space0)
 }
 
 Buffer<float3> g_VertexPositions : register(t0, space2);
+Buffer<float2> g_VertexUVs: register(t1, space2);
 
 Texture2D g_Albedo : register(t0);
 SamplerState g_Sampler : register(s0);
 
 
-PSInput VSMain(float4 _position : POSITION, float4 color : COLOR, float2 uv : TEXCOORD, uint vertexId : SV_VERTEXID)
+PSInput VSMain(float4 _position : POSITION, float4 color : COLOR, float2 _uv : TEXCOORD, uint vertexId : SV_VERTEXID)
 {
 	PSInput result;
 
 	float4 position = float4(g_VertexPositions[vertexId].xyz, 1.0f);
+	float2 uv = float2(g_VertexUVs[vertexId].xy);
 
 	result.position = position * float4(3,3,1,1) + g_offset;
 	result.color = color;

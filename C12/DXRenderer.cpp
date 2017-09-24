@@ -11,6 +11,7 @@ DXRenderer::DXRenderer()
 {
 	m_rootSignature = nullptr;
 	m_streamPos = nullptr;
+	m_streamUV = nullptr;
 }
 
 DXRenderer::~DXRenderer()
@@ -78,10 +79,14 @@ void DXRenderer::Init()
 		m_vertexBufferView.StrideInBytes = sizeof(Vertex);
 		m_vertexBufferView.SizeInBytes = vertexBufferSize;
 
-		XMFLOAT3 positions[] = { { 0.0f, 0.25f, 0.0f }, { 0.25f, -0.25f, 0.0f }, { -0.25f, -0.25f, 0.0f } };
+		XMFLOAT3 positions[] = { { 0.0f, 0.25f, 0.0f },{ 0.25f, -0.25f, 0.0f },{ -0.25f, -0.25f, 0.0f } };
+		XMFLOAT2 uvs[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f } };
 
 		m_streamPos = new DXStructuredBuffer;
+		m_streamUV = new DXStructuredBuffer;
+
 		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3), positions);
+		m_streamUV->Init(_countof(uvs), sizeof(XMFLOAT2), uvs);
 	}
 
 	// Constant buffer

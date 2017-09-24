@@ -243,7 +243,13 @@ void DXApp::Render()
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
 	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->m_srv, 1);
-	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, &m_renderer->m_streamPos->m_srv, 1);
+
+	DXDescriptorHandle vertexStreams[] = 
+	{ 
+		m_renderer->m_streamPos->m_srv,
+		m_renderer->m_streamUV->m_srv,
+	};
+	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
 
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
