@@ -39,6 +39,7 @@ using namespace DirectX;
 #include <stack>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 #include "Types.h"
 #include "Utils.h"

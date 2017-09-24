@@ -11,6 +11,7 @@
 #include "DXTexture2D.h"
 #include "Timer.h"
 #include "DXRenderContext.h"
+#include "MasterRenderThread.h"
 
 DXApp* DXApp::ms_instance = nullptr;
 
@@ -23,6 +24,9 @@ DXApp::DXApp()
 
 DXApp::~DXApp()
 {
+	m_masterRenderThread->EndThread();
+	delete m_masterRenderThread;
+
 	for (u32 i = 0; i < k_RenderLatency; i++)
 	{
 		m_renderContext[i]->Shutdown(m_commandQueue);
@@ -44,6 +48,14 @@ DXApp::~DXApp()
 
 	assert(ms_instance == this);
 	ms_instance = nullptr;
+}
+
+void DXApp::ShutdownRendercontexts()
+{
+	for (u32 i = 0; i < k_RenderLatency; i++)
+	{
+		m_renderContext[i]->Shutdown(m_commandQueue);
+	}
 }
 
 void GetHardwareAdapter(IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter)
@@ -131,6 +143,9 @@ void DXApp::Init(HWND hWnd)
 		m_texture->Init();
 		DX::Uploader->RequestUpload(m_texture);
 	}
+
+	m_masterRenderThread = new MasterRenderThread(this);
+	m_masterRenderThread->StartThread();
 
 }
 

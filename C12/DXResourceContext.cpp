@@ -12,19 +12,8 @@ DXResourceContext::~DXResourceContext()
 {
 	delete m_uploadBuffer;
 
-	for (size_t i = 0; i < m_descriptorHeaps.size(); i++)
-	{
-		delete m_descriptorHeaps[i];
-	}
-}
-
-DXUploadContext DXResourceContext::AllocFromUploadHeap(u32 size)
-{
-	const u32 alignedSize = AlignOnPowerOfTwo<4>(size);
-	DXUploadContext ctx = m_uploadCurrent;
-	m_uploadCurrent.CPU += alignedSize;
-	m_uploadCurrent.GPU += alignedSize;
-	return ctx;
+	for (auto & heap : m_descriptorHeaps)
+		delete heap;
 }
 
 void DXResourceContext::Init()
@@ -58,4 +47,13 @@ void DXResourceContext::Reset()
 
 	m_uploadCurrent.CPU = m_uploadBuffer->m_cpuPtr;
 	m_uploadCurrent.GPU = m_uploadBuffer->m_gpuPtr;
+}
+
+DXUploadContext DXResourceContext::AllocFromUploadHeap(u32 size)
+{
+	const u32 alignedSize = AlignOnPowerOfTwo<4>(size);
+	DXUploadContext ctx = m_uploadCurrent;
+	m_uploadCurrent.CPU += alignedSize;
+	m_uploadCurrent.GPU += alignedSize;
+	return ctx;
 }

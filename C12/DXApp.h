@@ -11,6 +11,7 @@ class DXRenderer;
 class DXTexture2D;
 class Timer;
 class DXRenderContext;
+class MasterRenderThread;
 
 class DXApp
 {
@@ -29,6 +30,8 @@ public:
 	DXApp();
 	~DXApp();
 
+	void ShutdownRendercontexts();
+
 private:
 
 	DXDescriptorHeap* m_swapChainBuffersDescriptorHeap = nullptr;
@@ -43,22 +46,16 @@ private:
 
 	ComPtr<IDXGISwapChain3> m_swapChain;
 	ComPtr<ID3D12Resource> m_swapChainBuffers[k_RenderLatency];
-
-	//ComPtr<ID3D12PipelineState> m_psoNull;
-	//ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
-	//ComPtr<ID3D12GraphicsCommandList> m_commandList;
 
-	// Synchronization objects.
 	u32 m_frameIndex;
-	//std::unique_ptr<DXFence> m_fence;
-	//u64 m_fenceValue = 0;
 
 	// Render
 	DXRenderer* m_renderer;
-	DXTexture2D * m_texture = nullptr;
+	DXTexture2D* m_texture = nullptr;
 
 	Timer * m_timer = nullptr;
+	MasterRenderThread * m_masterRenderThread = nullptr;
 
 	void InitDebugLayer();
 	void InitSwapChain(HWND hWnd);

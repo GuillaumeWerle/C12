@@ -40,6 +40,8 @@
     <ClInclude Include="data\shaders\basic.hlsl" />
     <ClInclude Include="DXUploadable.h" />
     <ClInclude Include="DXUploader.h" />
+    <ClInclude Include="Thread.h" />
+    <ClInclude Include="MasterRenderThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -63,6 +65,8 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="DXRenderContext.cpp" />
     <ClCompile Include="DXUploader.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="MasterRenderThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

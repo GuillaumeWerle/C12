@@ -150,8 +150,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
 		if (g_App)
 		{
-			g_App->Update();
-			g_App->Render();
+			//g_App->Update();
+			//g_App->Render();
 		}
 		return 0;
     case WM_DESTROY:
