@@ -37,15 +37,19 @@
     <ClInclude Include="DXRootSignature.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="DXRenderContext.h" />
-    <ClInclude Include="data\shaders\basic.hlsl" />
     <ClInclude Include="DXUploadable.h" />
     <ClInclude Include="DXUploader.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="MasterRenderThread.h" />
     <ClInclude Include="DXStructuredBuffer.h" />
-    <ClInclude Include="data\shaders\ShaderCommon.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="String.h" />
+    <ClInclude Include="data\shaders\basic.hlsl">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="data\shaders\ShaderCommon.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
