@@ -43,6 +43,7 @@
     <ClInclude Include="Thread.h" />
     <ClInclude Include="MasterRenderThread.h" />
     <ClInclude Include="DXStructuredBuffer.h" />
+    <ClInclude Include="data\shaders\ShaderCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
