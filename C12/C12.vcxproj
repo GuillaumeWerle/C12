@@ -170,6 +170,7 @@
     <ClInclude Include="DXUploader.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="MasterRenderThread.h" />
+    <ClInclude Include="String.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Types.h" />
@@ -206,6 +207,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="String.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Utils.cpp" />

@@ -13,6 +13,7 @@
 #include "Timer.h"
 #include "DXRenderContext.h"
 #include "MasterRenderThread.h"
+#include "FileSystem.h"
 
 DXApp* DXApp::ms_instance = nullptr;
 
@@ -49,6 +50,8 @@ DXApp::~DXApp()
 
 	assert(ms_instance == this);
 	ms_instance = nullptr;
+
+	delete FileSystem::ms_instance;
 }
 
 void DXApp::ShutdownRendercontexts()
@@ -91,6 +94,7 @@ void GetHardwareAdapter(IDXGIFactory2* pFactory, IDXGIAdapter1** ppAdapter)
 void DXApp::Init(HWND hWnd)
 {
 	m_timer = new Timer;
+	FileSystem::ms_instance = new FileSystem(L"data");
 
 	m_dxgiFactoryFlags = 0;
 

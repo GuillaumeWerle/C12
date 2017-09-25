@@ -39,6 +39,7 @@ using namespace DirectX;
 #include <stack>
 #include <list>
 #include <memory>
+#include <map>
 #include <mutex>
 #include <thread>
 

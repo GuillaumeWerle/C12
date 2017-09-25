@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DXShaderCompiler.h"
+#include "FileSystem.h"
 
 #pragma comment (lib, "d3dcompiler.lib")
 
@@ -7,18 +8,27 @@ class DXShaderIncludeInterface : public ID3DInclude
 {
 public:
 
-    HRESULT Open(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+	std::vector<u8> m_data;
+	
+	HRESULT Open(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
     {
-        //throw std::logic_error("The method or operation is not implemented.");
-        //FILE * f = fopen(pFileName);
-        //fclose(f);
-        return 0;
+		bool success = FileSystem::ms_instance->ReadFile(m_data, FileSystem::Path(pFileName));
+		if(success)
+		{
+			*ppData = &m_data[0];
+			*pBytes = (UINT)m_data.size();
+			return S_OK;
+		}
+		else
+		{
+			return S_FALSE;
+		}
     }
 
 
     HRESULT Close(THIS_ LPCVOID pData)
     {
-        return 0;
+        return S_OK;
     }
 };
 
