@@ -12,12 +12,12 @@ class FileSystem
 {
 public:
 
-    std::wstring Remove(const std::wstring & Path, wchar_t * pattern)
+    std::wstring Remove(const std::wstring & inputString, wchar_t * pattern)
     {
-        size_t buffSize = (Path.size() + 1) * sizeof(wchar_t);
+        size_t buffSize = (inputString.size() + 1) * sizeof(wchar_t);
         wchar_t * buff = (wchar_t *)alloca(buffSize);
         *buff = 0;
-        wcscat_s(buff, buffSize, Path.c_str());
+        wcscat_s(buff, buffSize, inputString.c_str());
 
         for (;;)
         {
