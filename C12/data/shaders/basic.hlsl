@@ -9,6 +9,8 @@
 //
 //*********************************************************
 
+#include "ShaderCommon.h"
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
@@ -22,7 +24,7 @@ cbuffer cb : register(b0, space0)
 	float4 g_offset;
 }
 
-Buffer<float3> g_VertexPositions : register(t0, space2);
+Buffer<float3> g_VertexPositions : register(t0, SPACE_VERTEX_SRV);
 Buffer<float2> g_VertexUVs: register(t1, space2);
 
 Texture2D g_Albedo : register(t0);
