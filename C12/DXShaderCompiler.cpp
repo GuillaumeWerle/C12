@@ -3,6 +3,25 @@
 
 #pragma comment (lib, "d3dcompiler.lib")
 
+class DXShaderIncludeInterface : public ID3DInclude
+{
+public:
+
+    HRESULT Open(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+    {
+        //throw std::logic_error("The method or operation is not implemented.");
+        //FILE * f = fopen(pFileName);
+        //fclose(f);
+        return 0;
+    }
+
+
+    HRESULT Close(THIS_ LPCVOID pData)
+    {
+        return 0;
+    }
+};
+
 DXShaderCompiler::DXShaderCompiler()
 {
 }
@@ -35,8 +54,11 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 	default:
 		assert(0);
 	}
+
+    DXShaderIncludeInterface includeInterface;
+
 	ComPtr<ID3DBlob> errorMsg;
-	HRESULT hr = D3DCompileFromFile(path.c_str(), nullptr, nullptr, entry.c_str(), profile, compileFlags, 0, &shader->m_blob, &errorMsg);
+	HRESULT hr = D3DCompileFromFile(path.c_str(), nullptr, &includeInterface, entry.c_str(), profile, compileFlags, 0, &shader->m_blob, &errorMsg);
 	if (FAILED(hr))
 	{
 		::OutputDebugStringA((LPCSTR)errorMsg->GetBufferPointer());
