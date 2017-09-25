@@ -31,8 +31,8 @@ DXApp::~DXApp()
 
 	for (u32 i = 0; i < k_RenderLatency; i++)
 	{
-		m_renderContext[i]->Shutdown(m_commandQueue);
-		delete m_renderContext[i];
+		m_renderContexts[i]->Shutdown(m_commandQueue);
+		delete m_renderContexts[i];
 	}
 
 	delete DX::Uploader;
@@ -58,7 +58,7 @@ void DXApp::ShutdownRendercontexts()
 {
 	for (u32 i = 0; i < k_RenderLatency; i++)
 	{
-		m_renderContext[i]->Shutdown(m_commandQueue);
+		m_renderContexts[i]->Shutdown(m_commandQueue);
 	}
 }
 
@@ -137,10 +137,10 @@ void DXApp::Init(HWND hWnd)
 	m_renderer = new DXRenderer;
 	m_renderer->Init();
 
-	for (u32 i = 0; i < k_RenderLatency; i++)
+	for (auto & rc : m_renderContexts)
 	{
-		m_renderContext[i] = new DXRenderContext;
-		m_renderContext[i]->Init();
+		rc = new DXRenderContext;
+		rc->Init();
 	}
 
 	{
@@ -219,7 +219,7 @@ void DXApp::Render()
 	if (DX::Device == nullptr)
 		return;
 
-	DXRenderContext * rc = m_renderContext[m_frameIndex];
+	DXRenderContext * rc = m_renderContexts[m_frameIndex];
 	rc->Reset(m_commandQueue);
 
 	DX::Uploader->ExecuteUploadRequests(rc);

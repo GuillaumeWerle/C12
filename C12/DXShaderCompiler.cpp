@@ -45,12 +45,7 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 {
 	DXShader * shader = &output;
 
-#if defined(_DEBUG)
-	// Enable better shader debugging with the graphics debugging tools.
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
 	UINT compileFlags = 0;
-#endif
 
 	const char * profile = nullptr;
 	switch (shaderType)
@@ -74,5 +69,14 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 		::OutputDebugStringA((LPCSTR)errorMsg->GetBufferPointer());
 		assert(0);
 	}
+
+	ComPtr<ID3D12ShaderReflection> reflector;
+	hr = D3DReflect(shader->m_blob->GetBufferPointer(), shader->m_blob->GetBufferSize(), IID_PPV_ARGS(&reflector));
+	D3D12_SHADER_DESC shaderDesc;
+	reflector->GetDesc(&shaderDesc);
+	UINT idx = 0;
+	D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+	reflector->GetResourceBindingDesc(idx, &bindDesc);
+
 	return hr;
 }

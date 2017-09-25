@@ -38,7 +38,7 @@ private:
 	DXDescriptorHandle m_swapChainRTVs[k_RenderLatency];
 	//DXResourceContext m_resourceContexts[k_RenderLatency];
 	DXResourceContext* m_rc;
-	DXRenderContext* m_renderContext[k_RenderLatency];
+	DXRenderContext* m_renderContexts[k_RenderLatency];
 
 	u32 m_dxgiFactoryFlags;
 	ComPtr<IDXGIFactory4> m_dxgiFactory;

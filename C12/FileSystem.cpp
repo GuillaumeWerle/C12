@@ -127,7 +127,7 @@ bool FileSystem::Find(std::wstring & path, const std::wstring & filename)
 
 bool FileSystem::ReadFile(std::vector<u8> & data, const Path & path)
 {
-	HANDLE h = CreateFileW(path.Ptr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_READONLY, NULL);
+	HANDLE h = CreateFileW(path.Ptr(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_READONLY, nullptr);
 	if (h == INVALID_HANDLE_VALUE)
 		return false;
 

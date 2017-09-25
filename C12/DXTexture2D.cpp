@@ -5,6 +5,7 @@
 #include "DXRenderContext.h"
 #include "DXBuffer.h"
 #include "DirectXTex/DirectXTex/DirectXTex.h"
+#include "FileSystem.h"
 
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex\\DirectXTex\\Bin\\Desktop_2015\\x64\\Debug\\DirectXTex.lib")
@@ -28,7 +29,10 @@ DXTexture2D::~DXTexture2D()
 void DXTexture2D::Init()
 {
 	DirectX::ScratchImage scratch;
-	DirectX::LoadFromDDSFile( L"data\\diffuse.dds", DirectX::DDS_FLAGS_NONE, nullptr, scratch);
+
+	std::vector<u8> dds;
+	FileSystem::ms_instance->ReadFile(dds, FileSystem::Path(L"diffuse.dds"));
+	DirectX::LoadFromDDSMemory( &dds[0], dds.size(), DirectX::DDS_FLAGS_NONE, nullptr, scratch);
 
 	const TexMetadata& metadata = scratch.GetMetadata();
 

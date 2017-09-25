@@ -25,7 +25,7 @@ cbuffer cb : register(b0, space0)
 }
 
 Buffer<float3> g_VertexPositions : register(t0, SPACE_VERTEX_SRV);
-Buffer<float2> g_VertexUVs: register(t1, space2);
+Buffer<float2> g_VertexUVs: register(t1, SPACE_VERTEX_SRV);
 
 Texture2D g_Albedo : register(t0);
 SamplerState g_Sampler : register(s0);
