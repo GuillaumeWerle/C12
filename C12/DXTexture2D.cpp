@@ -23,7 +23,6 @@ DXTexture2D::DXTexture2D()
 DXTexture2D::~DXTexture2D()
 {
 	delete m_uploadBuffer;
-	DX::PoolSRVCBVUAV->Free(m_srv);
 }
 
 void DXTexture2D::LoadDDS(const FileSystem::Path & path)
@@ -88,9 +87,7 @@ void DXTexture2D::Create(const D3D12_RESOURCE_DESC & desc)
 		nullptr,
 		IID_PPV_ARGS(&m_resource));
 
-	m_srv = DX::PoolSRVCBVUAV->Alloc();
-	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
-
+	m_srv.Create(m_resource.Get());
 }
 
 void DXTexture2D::CreateUploadBuffer()

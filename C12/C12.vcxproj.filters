@@ -50,6 +50,7 @@
     <ClInclude Include="data\shaders\ShaderCommon.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="DXSRV.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXApp.cpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="DXStructuredBuffer.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="String.cpp" />
+    <ClCompile Include="DXSRV.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

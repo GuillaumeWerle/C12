@@ -165,6 +165,7 @@
     <ClInclude Include="DXRootSignature.h" />
     <ClInclude Include="DXShader.h" />
     <ClInclude Include="DXShaderCompiler.h" />
+    <ClInclude Include="DXSRV.h" />
     <ClInclude Include="DXTexture2D.h" />
     <ClInclude Include="DXUploadable.h" />
     <ClInclude Include="DXUploader.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="DXRootSignature.cpp" />
     <ClCompile Include="DXShader.cpp" />
     <ClCompile Include="DXShaderCompiler.cpp" />
+    <ClCompile Include="DXSRV.cpp" />
     <ClCompile Include="DXTexture2D.cpp" />
     <ClCompile Include="DXUploader.cpp" />
     <ClCompile Include="FileSystem.cpp" />

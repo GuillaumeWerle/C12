@@ -3,6 +3,7 @@
 #include "DXDescriptorHandle.h"
 #include "DXUploadable.h"
 #include "FileSystem.h"
+#include "DXSRV.h"
 
 class DXBuffer;
 
@@ -13,7 +14,7 @@ public:
 	D3D12_RESOURCE_DESC m_desc;
 	ComPtr<ID3D12Resource> m_resource;
 	DXBuffer * m_uploadBuffer = nullptr;
-	DXDescriptorHandle m_srv;
+	DXSRV m_srv;
 	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> m_footPrintLayouts;
 	std::vector<u32> m_numRows;
 	std::vector<UINT64> m_rowSizeInBytes;
