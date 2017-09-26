@@ -10,7 +10,7 @@ public:
 
 	std::vector<u8> m_data;
 	
-	HRESULT Open(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes)
+	virtual HRESULT Open(THIS_ D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID *ppData, UINT *pBytes) override
     {
 		bool success = FileSystem::ms_instance->ReadFile(m_data, FileSystem::Path(pFileName));
 		if(success)
@@ -26,7 +26,7 @@ public:
     }
 
 
-    HRESULT Close(THIS_ LPCVOID pData)
+    virtual HRESULT Close(THIS_ LPCVOID pData) override
     {
         return S_OK;
     }
@@ -70,6 +70,7 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 		assert(0);
 	}
 
+/*
 	ComPtr<ID3D12ShaderReflection> reflector;
 	hr = D3DReflect(shader->m_blob->GetBufferPointer(), shader->m_blob->GetBufferSize(), IID_PPV_ARGS(&reflector));
 	D3D12_SHADER_DESC shaderDesc;
@@ -77,6 +78,7 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 	UINT idx = 0;
 	D3D12_SHADER_INPUT_BIND_DESC bindDesc;
 	reflector->GetResourceBindingDesc(idx, &bindDesc);
+*/
 
 	return hr;
 }

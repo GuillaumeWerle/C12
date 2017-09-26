@@ -145,8 +145,7 @@ void DXApp::Init(HWND hWnd)
 
 	{
 		m_texture = new DXTexture2D;
-		m_texture->Init();
-		DX::Uploader->RequestUpload(m_texture);
+		m_texture->LoadDDS( FileSystem::Path(L"diffuse.dds"));
 	}
 
 	m_masterRenderThread = new MasterRenderThread(this);

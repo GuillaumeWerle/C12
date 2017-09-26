@@ -89,26 +89,9 @@ void DXRenderer::Init()
 		m_streamUV->Init(_countof(uvs), sizeof(XMFLOAT2), uvs);
 	}
 
-	// Constant buffer
-	/*{
-		m_cb = new DXBuffer();
-		m_cb->Init(D3D12_HEAP_TYPE_UPLOAD, 256);
-		
-		XMFLOAT4 * data = (XMFLOAT4*)m_cb->m_cpuPtr;
-		data->x = 0.5f;
-		data->y = 0.6f;
-		data->z = 0.9f;
-		data->w = 1.0f;
-	}*/
 
-//	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	//	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 	UINT compileFlags = 0;
-
-	//ComPtr<ID3DBlob> vertexShader;
-	//ComPtr<ID3DBlob> pixelShader;
-	//ComPtr<ID3DBlob> errorMsg;
-	//CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorMsg));
-	//CHECK_D3DOK(hr, D3DCompileFromFile(L"data\\shaders\\basic.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorMsg));
 
 	DXShader vs, ps;
 	DXShaderCompiler compiler;

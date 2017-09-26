@@ -2,6 +2,7 @@
 
 #include "DXDescriptorHandle.h"
 #include "DXUploadable.h"
+#include "FileSystem.h"
 
 class DXBuffer;
 
@@ -18,9 +19,10 @@ public:
 	std::vector<UINT64> m_rowSizeInBytes;
 
 
-	void Init();
+	void LoadDDS(const FileSystem::Path & path);
 
-	void CreateFromDesc(const D3D12_RESOURCE_DESC & rdesc);
+	void Create(const D3D12_RESOURCE_DESC & rdesc);
+	void CreateUploadBuffer();
 
 	virtual void Upload(DXRenderContext * rc) override;
 

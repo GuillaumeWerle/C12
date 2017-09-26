@@ -26,29 +26,30 @@ DXTexture2D::~DXTexture2D()
 	DX::PoolSRVCBVUAV->Free(m_srv);
 }
 
-void DXTexture2D::Init()
+void DXTexture2D::LoadDDS(const FileSystem::Path & path)
 {
-	DirectX::ScratchImage scratch;
-
 	std::vector<u8> dds;
-	FileSystem::ms_instance->ReadFile(dds, FileSystem::Path(L"diffuse.dds"));
-	DirectX::LoadFromDDSMemory( &dds[0], dds.size(), DirectX::DDS_FLAGS_NONE, nullptr, scratch);
+	FileSystem::ms_instance->ReadFile(dds, path);
 
+	DirectX::ScratchImage scratch;
+	DirectX::LoadFromDDSMemory(&dds[0], dds.size(), DirectX::DDS_FLAGS_NONE, nullptr, scratch);
 	const TexMetadata& metadata = scratch.GetMetadata();
 
-	D3D12_RESOURCE_DESC rdesc = {};
-	rdesc.MipLevels = (u16)metadata.mipLevels;
-	rdesc.Format = metadata.format;
-	rdesc.Width = metadata.width;
-	rdesc.Height = (u32)metadata.height;
-	rdesc.Flags = D3D12_RESOURCE_FLAG_NONE;
-	rdesc.DepthOrArraySize = (u16)metadata.arraySize;
-	rdesc.SampleDesc.Count = 1;
-	rdesc.SampleDesc.Quality = 0;
-	rdesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	rdesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	D3D12_RESOURCE_DESC desc = {};
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Format = metadata.format;
+	desc.Width = metadata.width;
+	desc.Height = (u32)metadata.height;
+	desc.DepthOrArraySize = (u16)metadata.arraySize;
+	desc.MipLevels = (u16)metadata.mipLevels;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 
-	CreateFromDesc(rdesc);
+	Create(desc);
+
+	CreateUploadBuffer();
 
 	u32 subresourceIndex = 0;
 	for (u32 arrayIndex = 0; arrayIndex < m_desc.DepthOrArraySize; arrayIndex++)
@@ -71,16 +72,18 @@ void DXTexture2D::Init()
 			 }
 		}
 	}
+
+	DX::Uploader->RequestUpload(this);
 }
 
-void DXTexture2D::CreateFromDesc(const D3D12_RESOURCE_DESC & rdesc)
+void DXTexture2D::Create(const D3D12_RESOURCE_DESC & desc)
 {
-	m_desc = rdesc;
+	m_desc = desc;
 
 	DX::Device->CreateCommittedResource(
 		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 		D3D12_HEAP_FLAG_NONE,
-		&rdesc,
+		&desc,
 		D3D12_RESOURCE_STATE_COPY_DEST,
 		nullptr,
 		IID_PPV_ARGS(&m_resource));
@@ -88,10 +91,14 @@ void DXTexture2D::CreateFromDesc(const D3D12_RESOURCE_DESC & rdesc)
 	m_srv = DX::PoolSRVCBVUAV->Alloc();
 	DX::Device->CreateShaderResourceView(m_resource.Get(), nullptr, m_srv.CPU);
 
+}
+
+void DXTexture2D::CreateUploadBuffer()
+{
 	m_footPrintLayouts.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
 	m_numRows.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
 	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	DX::Device->GetCopyableFootprints(&rdesc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
+	DX::Device->GetCopyableFootprints(&m_desc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
 
 	m_uploadBuffer = new DXBuffer;
 	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
