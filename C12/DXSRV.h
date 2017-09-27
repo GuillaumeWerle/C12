@@ -15,10 +15,10 @@ public:
 	
 	~DXSRV()
 	{
-		Free();
+		Release();
 	}
 
-	void Free();
+	void Release();
 
 	void Create(ID3D12Resource * resource)
 	{
@@ -41,10 +41,10 @@ public:
 
 	~DXRTV()
 	{
-		Free();
+		Release();
 	}
 
-	void Free();
+	void Release();
 
 	void Create(ID3D12Resource * resource)
 	{

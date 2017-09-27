@@ -3,7 +3,7 @@
 #include "DX.h"
 #include "DXDescriptorPool.h"
 
-void DXRTV::Free()
+void DXRTV::Release()
 {
 	if (CPU.ptr)
 	{
@@ -15,7 +15,7 @@ void DXRTV::Free()
 	}
 }
 
-void DXSRV::Free()
+void DXSRV::Release()
 {
 	if (CPU.ptr)
 	{

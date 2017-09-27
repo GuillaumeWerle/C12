@@ -43,7 +43,7 @@ DXApp::~DXApp()
 	//delete m_swapChainBuffersDescriptorHeap;
 
 	for (auto & rtv : m_swapChainRTVs)
-		rtv.Free();
+		rtv.Release();
 
 	// descriptor pools must be released at the end.
 	delete DX::PoolSRVCBVUAV;
