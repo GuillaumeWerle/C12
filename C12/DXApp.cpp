@@ -40,7 +40,10 @@ DXApp::~DXApp()
 	delete m_timer;
 	delete m_texture;
 	delete m_renderer;
-	delete m_swapChainBuffersDescriptorHeap;
+	//delete m_swapChainBuffersDescriptorHeap;
+
+	for (auto & rtv : m_swapChainRTVs)
+		rtv.Free();
 
 	// descriptor pools must be released at the end.
 	delete DX::PoolSRVCBVUAV;
@@ -172,8 +175,8 @@ void DXApp::InitDebugLayer()
 void DXApp::InitSwapChain(HWND hWnd)
 {
 	HRESULT hr;
-	m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
-	m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+	//m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
+	//m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -203,8 +206,10 @@ void DXApp::InitSwapChain(HWND hWnd)
 	for (UINT bufferIndex = 0; bufferIndex < k_RenderLatency; bufferIndex++)
 	{
 		m_swapChain->GetBuffer(bufferIndex, IID_PPV_ARGS(&m_swapChainBuffers[bufferIndex]));
-		m_swapChainRTVs[bufferIndex] = m_swapChainBuffersDescriptorHeap->GetHandle(bufferIndex);
-		DX::Device->CreateRenderTargetView(m_swapChainBuffers[bufferIndex].Get(), nullptr, m_swapChainRTVs[bufferIndex].CPU);
+		//m_swapChainRTVs[bufferIndex] = m_swapChainBuffersDescriptorHeap->GetHandle(bufferIndex);
+		m_swapChainRTVs[bufferIndex].Create(m_swapChainBuffers[bufferIndex].Get());
+		//DX::Device->CreateRenderTargetView(m_swapChainBuffers[bufferIndex].Get(), nullptr, m_swapChainRTVs[bufferIndex].CPU);
+
 	}
 }
 
