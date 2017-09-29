@@ -3,16 +3,12 @@
 #include "DX.h"
 #include "DXDescriptorPool.h"
 
-void DXRTV::Release()
+void DXSRV::Create(ID3D12Resource * resource)
 {
-	if (CPU.ptr)
-	{
-		DXDescriptorHandle h;
-		h.CPU = CPU;
-		h.GPU = GPU;
-		DX::PoolRTV->Free(h);
-		CPU.ptr = 0;
-	}
+	DXDescriptorHandle h = DX::PoolSRVCBVUAV->Alloc();
+	DX::Device->CreateShaderResourceView(resource, nullptr, h.CPU);
+	CPU = h.CPU;
+	GPU = h.GPU;
 }
 
 void DXSRV::Release()
@@ -23,6 +19,26 @@ void DXSRV::Release()
 		h.CPU = CPU;
 		h.GPU = GPU;
 		DX::PoolSRVCBVUAV->Free(h);
+		CPU.ptr = 0;
+	}
+}
+
+void DXRTV::Create(ID3D12Resource * resource)
+{
+	DXDescriptorHandle h = DX::PoolRTV->Alloc();
+	DX::Device->CreateRenderTargetView(resource, nullptr, h.CPU);
+	CPU = h.CPU;
+	GPU = h.GPU;
+}
+
+void DXRTV::Release()
+{
+	if (CPU.ptr)
+	{
+		DXDescriptorHandle h;
+		h.CPU = CPU;
+		h.GPU = GPU;
+		DX::PoolRTV->Free(h);
 		CPU.ptr = 0;
 	}
 }
