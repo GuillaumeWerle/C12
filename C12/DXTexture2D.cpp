@@ -25,6 +25,44 @@ DXTexture2D::~DXTexture2D()
 	delete m_uploadBuffer;
 }
 
+void DXTexture2D::Create(const D3D12_RESOURCE_DESC & desc)
+{
+	m_desc = desc;
+
+	DX::Device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		&desc,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		nullptr,
+		IID_PPV_ARGS(&m_resource));
+
+	m_srv.Create(m_resource.Get(), nullptr);
+}
+
+void DXTexture2D::Upload(DXRenderContext * rc)
+{
+	for (u32 subresourceIndex = 0; subresourceIndex < m_footPrintLayouts.size(); subresourceIndex++)
+	{
+		CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), subresourceIndex);
+		CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer->GetResource(), m_footPrintLayouts[subresourceIndex]);
+		rc->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+	}
+	rc->ResourceBarrier(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+}
+
+
+void DXTexture2D::CreateUploadBuffer()
+{
+	m_footPrintLayouts.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	m_numRows.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
+	DX::Device->GetCopyableFootprints(&m_desc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
+
+	m_uploadBuffer = new DXBuffer;
+	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
+}
+
 void DXTexture2D::LoadDDS(const FileSystem::Path & path)
 {
 	std::vector<u8> dds;
@@ -50,6 +88,13 @@ void DXTexture2D::LoadDDS(const FileSystem::Path & path)
 
 	CreateUploadBuffer();
 
+	CopyScratchImageToUploadBuffer(scratch);
+
+	DX::Uploader->RequestUpload(this);
+}
+
+void DXTexture2D::CopyScratchImageToUploadBuffer(DirectX::ScratchImage &scratch)
+{
 	u32 subresourceIndex = 0;
 	for (u32 arrayIndex = 0; arrayIndex < m_desc.DepthOrArraySize; arrayIndex++)
 	{
@@ -62,53 +107,13 @@ void DXTexture2D::LoadDDS(const FileSystem::Path & path)
 
 			u64 destPitch = m_footPrintLayouts[subresourceIndex].Footprint.RowPitch;
 			u64 srcPitch = img->rowPitch;
-			
-			 for (u32 rowIndex = 0; rowIndex < m_numRows[subresourceIndex]; rowIndex++)
-			 {
-				 memcpy(destPtr, srcPtr, Min(destPitch, srcPitch));
-				 destPtr += destPitch;
-				 srcPtr += srcPitch;
-			 }
+
+			for (u32 rowIndex = 0; rowIndex < m_numRows[subresourceIndex]; rowIndex++)
+			{
+				memcpy(destPtr, srcPtr, Min(destPitch, srcPitch));
+				destPtr += destPitch;
+				srcPtr += srcPitch;
+			}
 		}
 	}
-
-	DX::Uploader->RequestUpload(this);
 }
-
-void DXTexture2D::Create(const D3D12_RESOURCE_DESC & desc)
-{
-	m_desc = desc;
-
-	DX::Device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-		D3D12_HEAP_FLAG_NONE,
-		&desc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(&m_resource));
-
-	m_srv.Create(m_resource.Get(), nullptr);
-}
-
-void DXTexture2D::CreateUploadBuffer()
-{
-	m_footPrintLayouts.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	m_numRows.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
-	DX::Device->GetCopyableFootprints(&m_desc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
-
-	m_uploadBuffer = new DXBuffer;
-	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
-}
-
-void DXTexture2D::Upload(DXRenderContext * rc)
-{
-	for (u32 subresourceIndex = 0; subresourceIndex < m_footPrintLayouts.size(); subresourceIndex++)
-	{
-		CD3DX12_TEXTURE_COPY_LOCATION dst(m_resource.Get(), subresourceIndex);
-		CD3DX12_TEXTURE_COPY_LOCATION src(m_uploadBuffer->GetResource(), m_footPrintLayouts[subresourceIndex]);
-		rc->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-	}
-	rc->ResourceBarrier(m_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
-}
-

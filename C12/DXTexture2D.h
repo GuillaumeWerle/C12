@@ -5,25 +5,26 @@
 #include "FileSystem.h"
 #include "DXSRV.h"
 
+namespace DirectX
+{
+	class ScratchImage;
+}
+
 class DXBuffer;
 
 class DXTexture2D : public DXUploadable
 {
 public:
-
 	const DXSRV & GetSRV() const { return m_srv; }
 	void SetSRV(const DXSRV & val) { m_srv = val; }
 
 	void LoadDDS(const FileSystem::Path & path);
-
 	void Create(const D3D12_RESOURCE_DESC & rdesc);
-	void CreateUploadBuffer();
-
-	virtual void Upload(DXRenderContext * rc) override;
 
 	DXTexture2D();
 	virtual ~DXTexture2D();
 
+	virtual void Upload(DXRenderContext * rc) override;
 
 private:
 	UINT64 m_footPrintTotalBytes = 0;
@@ -34,5 +35,8 @@ private:
 	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> m_footPrintLayouts;
 	std::vector<u32> m_numRows;
 	std::vector<UINT64> m_rowSizeInBytes;
+
+	void CopyScratchImageToUploadBuffer(DirectX::ScratchImage &scratch);
+	void CreateUploadBuffer();
 };
 

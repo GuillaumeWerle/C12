@@ -15,9 +15,7 @@ void DXSRV::Release()
 {
 	if (CPU.ptr)
 	{
-		DXDescriptorHandle h;
-		h.CPU = CPU;
-		h.GPU = GPU;
+		DXDescriptorHandle h(CPU,GPU);
 		DX::PoolSRVCBVUAV->Free(h);
 		CPU.ptr = 0;
 	}
@@ -35,9 +33,7 @@ void DXRTV::Release()
 {
 	if (CPU.ptr)
 	{
-		DXDescriptorHandle h;
-		h.CPU = CPU;
-		h.GPU = GPU;
+		DXDescriptorHandle h(CPU,GPU);
 		DX::PoolRTV->Free(h);
 		CPU.ptr = 0;
 	}
