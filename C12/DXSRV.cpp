@@ -6,7 +6,7 @@
 void DXSRV::Create(ID3D12Resource * resource, D3D12_SHADER_RESOURCE_VIEW_DESC * desc)
 {
 	DXDescriptorHandle h = DX::PoolSRVCBVUAV->Alloc();
-	DX::Device->CreateShaderResourceView(resource, nullptr, h.CPU);
+	DX::Device->CreateShaderResourceView(resource, desc, h.CPU);
 	CPU = h.CPU;
 	GPU = h.GPU;
 }
