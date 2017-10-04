@@ -1,13 +1,14 @@
 #pragma once
 #include "DXUploadable.h"
 #include "DXDescriptorHandle.h"
+#include "DXSRV.h"
 
 class DXBuffer;
 
 class DXStructuredBuffer : public DXUploadable
 {
 public:
-	DXDescriptorHandle m_srv;
+	DXSRV m_srv;
 
 	void Init(u32 count, u32 stride, void * data = nullptr);
 	u8 * Map();

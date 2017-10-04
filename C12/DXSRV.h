@@ -18,7 +18,7 @@ public:
 		Release();
 	}
 
-	void Create(ID3D12Resource * resource);
+	void Create(ID3D12Resource * resource, D3D12_SHADER_RESOURCE_VIEW_DESC * desc);
 	void Release();
 };
 

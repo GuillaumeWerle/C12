@@ -22,8 +22,6 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
 	m_commited = new DXBuffer;
 	m_commited->Init(D3D12_HEAP_TYPE_DEFAULT, count * stride);
 
-	m_srv = DX::PoolSRVCBVUAV->Alloc();
-	
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 	desc.Format = DXGI_FORMAT_UNKNOWN;
 	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
@@ -33,7 +31,7 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
 	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	m_srvDesc = desc;
-	DX::Device->CreateShaderResourceView(m_commited->GetResource(), &desc, m_srv.CPU);
+	m_srv.Create(m_commited->GetResource(), &desc);
 
 	DX::Device->GetCopyableFootprints(&m_upload->GetDesc(), 0, 1, 0, &m_placedFootprint, &m_rowCount, &m_pitchInBytes, &m_totalBytes);
 

@@ -10,15 +10,9 @@ class DXBuffer;
 class DXTexture2D : public DXUploadable
 {
 public:
-	UINT64 m_footPrintTotalBytes = 0;
-	D3D12_RESOURCE_DESC m_desc;
-	ComPtr<ID3D12Resource> m_resource;
-	DXBuffer * m_uploadBuffer = nullptr;
-	DXSRV m_srv;
-	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> m_footPrintLayouts;
-	std::vector<u32> m_numRows;
-	std::vector<UINT64> m_rowSizeInBytes;
 
+	const DXSRV & GetSRV() const { return m_srv; }
+	void SetSRV(const DXSRV & val) { m_srv = val; }
 
 	void LoadDDS(const FileSystem::Path & path);
 
@@ -28,6 +22,17 @@ public:
 	virtual void Upload(DXRenderContext * rc) override;
 
 	DXTexture2D();
-	~DXTexture2D();
+	virtual ~DXTexture2D();
+
+
+private:
+	UINT64 m_footPrintTotalBytes = 0;
+	D3D12_RESOURCE_DESC m_desc;
+	ComPtr<ID3D12Resource> m_resource;
+	DXBuffer * m_uploadBuffer = nullptr;
+	DXSRV m_srv;
+	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> m_footPrintLayouts;
+	std::vector<u32> m_numRows;
+	std::vector<UINT64> m_rowSizeInBytes;
 };
 

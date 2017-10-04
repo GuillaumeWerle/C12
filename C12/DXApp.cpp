@@ -40,7 +40,6 @@ DXApp::~DXApp()
 	delete m_timer;
 	delete m_texture;
 	delete m_renderer;
-	//delete m_swapChainBuffersDescriptorHeap;
 
 	for (auto & rtv : m_swapChainRTVs)
 		rtv.Release();
@@ -148,7 +147,7 @@ void DXApp::Init(HWND hWnd)
 
 	{
 		m_texture = new DXTexture2D;
-		m_texture->LoadDDS( FileSystem::Path(L"diffuse.dds"));
+		m_texture->LoadDDS(FileSystem::Path(L"diffuse.dds"));
 	}
 
 	m_masterRenderThread = new MasterRenderThread(this);
@@ -200,16 +199,14 @@ void DXApp::InitSwapChain(HWND hWnd)
 	swapChain.As(&m_swapChain);
 
 	// This sample does not support fullscreen transitions.
-	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
+	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, 0));
+//	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
 
 	// Create a RTV for each frame.
 	for (UINT bufferIndex = 0; bufferIndex < k_RenderLatency; bufferIndex++)
 	{
 		m_swapChain->GetBuffer(bufferIndex, IID_PPV_ARGS(&m_swapChainBuffers[bufferIndex]));
-		//m_swapChainRTVs[bufferIndex] = m_swapChainBuffersDescriptorHeap->GetHandle(bufferIndex);
 		m_swapChainRTVs[bufferIndex].Create(m_swapChainBuffers[bufferIndex].Get());
-		//DX::Device->CreateRenderTargetView(m_swapChainBuffers[bufferIndex].Get(), nullptr, m_swapChainRTVs[bufferIndex].CPU);
-
 	}
 }
 
@@ -250,7 +247,7 @@ void DXApp::Render()
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
-	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->m_srv, 1);
+	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->GetSRV(), 1);
 
 	DXDescriptorHandle vertexStreams[] = 
 	{ 

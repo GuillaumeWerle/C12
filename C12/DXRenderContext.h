@@ -26,7 +26,7 @@ public:
 
 	void SetGraphicRootSignature(DXRootSignature * rootSignature);
 	void SetCB(ERootParamIndex index, void * ptr, u32 size);
-	void SetDescriptorTable(ERootParamIndex index, DXDescriptorHandle * srvs, u32 count);
+	void SetDescriptorTable(ERootParamIndex index, const DXDescriptorHandle * srvs, u32 count);
 	void SetVertexStreamsSRVTable(DXDescriptorHandle * srvs, u32 count);
 	void SetPipelineState(ID3D12PipelineState * pso);
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);

@@ -86,7 +86,7 @@ void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
 	m_commandList->SetGraphicsRootConstantBufferView((UINT)index, m.GPU);
 }
 
-void DXRenderContext::SetDescriptorTable(ERootParamIndex index, DXDescriptorHandle * srvs, u32 count)
+void DXRenderContext::SetDescriptorTable(ERootParamIndex index, const DXDescriptorHandle * srvs, u32 count)
 {
 	assert(count < m_tmpSrvHandles.size());
 

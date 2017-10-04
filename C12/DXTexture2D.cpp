@@ -87,7 +87,7 @@ void DXTexture2D::Create(const D3D12_RESOURCE_DESC & desc)
 		nullptr,
 		IID_PPV_ARGS(&m_resource));
 
-	m_srv.Create(m_resource.Get());
+	m_srv.Create(m_resource.Get(), nullptr);
 }
 
 void DXTexture2D::CreateUploadBuffer()
