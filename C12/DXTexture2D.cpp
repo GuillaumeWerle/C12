@@ -104,6 +104,8 @@ void DXTexture2D::LoadDDS(const FileSystem::Path & path)
 
 void DXTexture2D::CreateDepthStencil(u32 width, u32 height)
 {
+	HRESULT hr = S_OK;
+
 	D3D12_RESOURCE_DESC desc = {};
 	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -122,13 +124,12 @@ void DXTexture2D::CreateDepthStencil(u32 width, u32 height)
 	clearValue.DepthStencil.Stencil = 0;
 	clearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	DX::Device->CreateCommittedResource(
-		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-		D3D12_HEAP_FLAG_NONE,
+	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE, 
 		&desc,
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		&clearValue,
-		IID_PPV_ARGS(&m_resource));
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, 
+		&clearValue, 
+		IID_PPV_ARGS(&m_resource)));
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvdesc = {};
 	srvdesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -138,6 +139,8 @@ void DXTexture2D::CreateDepthStencil(u32 width, u32 height)
 	srvdesc.Texture2D.MostDetailedMip = 0;
 	srvdesc.Texture2D.PlaneSlice = 0;
 	srvdesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+	m_srv.Create(m_resource.Get(), &srvdesc);
 }
 
 void DXTexture2D::CopyScratchImageToUploadBuffer(DirectX::ScratchImage &scratch)
