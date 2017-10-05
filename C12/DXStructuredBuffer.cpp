@@ -34,6 +34,7 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
 	m_srv.Create(m_commited->GetResource(), &desc);
 
 	DX::Device->GetCopyableFootprints(&m_upload->GetDesc(), 0, 1, 0, &m_placedFootprint, &m_rowCount, &m_pitchInBytes, &m_totalBytes);
+
 	if (data)
 	{
 		memcpy(Map(), data,  count * stride);

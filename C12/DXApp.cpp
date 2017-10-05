@@ -251,8 +251,8 @@ void DXApp::Render()
 
 	DXDescriptorHandle vertexStreams[] = 
 	{ 
-		m_renderer->m_streamPos->m_srv,
-		m_renderer->m_streamUV->m_srv,
+		m_renderer->m_streamPos->GetSRV(),
+		m_renderer->m_streamUV->GetSRV(),
 	};
 	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
 

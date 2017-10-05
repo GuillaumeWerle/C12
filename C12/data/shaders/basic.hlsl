@@ -11,6 +11,12 @@
 
 #include "ShaderCommon.h"
 
+struct CBStruct
+{
+	float4 Color;
+	float4 Offset;
+};
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
@@ -18,10 +24,9 @@ struct PSInput
 	float4 color : COLOR;
 };
 
-cbuffer cb : register(b0, space0)
+cbuffer cb : register(b0, SPACE_USER_CB)
 {
-	float4 g_color;
-	float4 g_offset;
+	CBStruct g_CB;
 }
 
 Buffer<float3> g_VertexPositions : register(t0, SPACE_VERTEX_SRV);
@@ -38,7 +43,7 @@ PSInput VSMain(float4 _position : POSITION, float4 color : COLOR, float2 _uv : T
 	float4 position = float4(g_VertexPositions[vertexId].xyz, 1.0f);
 	float2 uv = float2(g_VertexUVs[vertexId].xy);
 
-	result.position = position * float4(3,3,1,1) + g_offset;
+	result.position = position * float4(3,3,1,1) + g_CB.Offset;
 	result.color = color;
 	result.uv = uv;
 

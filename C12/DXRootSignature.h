@@ -21,8 +21,10 @@ enum class EVertexSteam : std::uint32_t
 class DXRootSignature
 {
 public:
-	u32 GetSrvCount() const { return m_srvCount; }
 	ID3D12RootSignature* Get() { return m_rootSignature.Get(); }
+
+	u32 GetSRVCount() const { return m_srvCount; }
+
 	void Create(u32 srvCount);
 
 	DXRootSignature();

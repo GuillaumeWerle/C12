@@ -19,7 +19,7 @@ public:
 	void SetSRV(const DXSRV & val) { m_srv = val; }
 
 	void LoadDDS(const FileSystem::Path & path);
-	void Create(const D3D12_RESOURCE_DESC & rdesc);
+	void CreateDepthStencil(u32 width, u32 height);
 
 	DXTexture2D();
 	virtual ~DXTexture2D();
@@ -36,6 +36,7 @@ private:
 	std::vector<u32> m_numRows;
 	std::vector<UINT64> m_rowSizeInBytes;
 
+	void Create(const D3D12_RESOURCE_DESC & rdesc);
 	void CopyScratchImageToUploadBuffer(DirectX::ScratchImage &scratch);
 	void CreateUploadBuffer();
 };

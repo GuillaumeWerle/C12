@@ -8,23 +8,26 @@ class DXBuffer;
 class DXStructuredBuffer : public DXUploadable
 {
 public:
-	DXSRV m_srv;
+	const DXSRV & GetSRV() const { return m_srv; }
+	void SetSRV(const DXSRV & val) { m_srv = val; }
 
 	void Init(u32 count, u32 stride, void * data = nullptr);
-	u8 * Map();
-
-	virtual void Upload(DXRenderContext * rc) override;
 
 	DXStructuredBuffer();
 	~DXStructuredBuffer();
 
-protected:
+	virtual void Upload(DXRenderContext * rc) override;
+
+private:
 	DXBuffer * m_upload = nullptr;
 	DXBuffer * m_commited = nullptr;
+	DXSRV m_srv;
 	D3D12_SHADER_RESOURCE_VIEW_DESC m_srvDesc = {};
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_placedFootprint = {};
 	u32 m_rowCount = 0;
 	u64 m_pitchInBytes = 0;
 	u64 m_totalBytes = 0;
+
+	u8 * Map();
 };
 

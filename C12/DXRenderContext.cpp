@@ -71,7 +71,7 @@ void DXRenderContext::SetRenderTarget(DXDescriptorHandle rtv)
 void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)
 {
 	m_commandList->SetGraphicsRootSignature(rootSignature->Get());
-	u32 srvTableSize = Max<u32>(rootSignature->GetSrvCount(), (u32)EVertexSteam::Count);
+	u32 srvTableSize = Max<u32>(rootSignature->GetSRVCount(), (u32)EVertexSteam::Count);
 	m_tmpSrvHandles.resize(srvTableSize);
 	D3D12_CPU_DESCRIPTOR_HANDLE emptyHandle;
 	emptyHandle.ptr = 0;

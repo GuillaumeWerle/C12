@@ -17,6 +17,7 @@
 #endif
 
 // Register space declaration
+#define SPACE_USER_CB			SPACE_INDEX(0)
 #define SPACE_ENGINE_CB			SPACE_INDEX(1)
 #define SPACE_VERTEX_SRV		SPACE_INDEX(2)
 
