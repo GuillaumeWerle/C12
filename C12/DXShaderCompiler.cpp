@@ -41,8 +41,10 @@ DXShaderCompiler::~DXShaderCompiler()
 {
 }
 
-HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, DXShaderType shaderType, const std::string & entry)
+HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, DXShaderType shaderType, const std::string & entry, const std::vector<DXMacro> & _macros)
 {
+	std::vector<DXMacro> macros = _macros;
+
 	DXShader * shader = &output;
 
 	UINT compileFlags = 0;
@@ -52,18 +54,38 @@ HRESULT DXShaderCompiler::Compile(DXShader & output, const std::wstring & path, 
 	{
 	case DXShaderType::VS:
 		profile = "vs_5_1";
+		macros.push_back(DXMacro("_VERTEX_SHADER"));
 		break;
 	case DXShaderType::PS:
 		profile = "ps_5_1";
+		macros.push_back(DXMacro("_PIXEL_SHADER"));
 		break;
 	default:
 		assert(0);
 	}
 
+	std::vector<u8> shaderSource;
+	FileSystem::ms_instance->ReadFile(shaderSource, FileSystem::Path(path));
+	assert(shaderSource.size());	// file not found ?
+
+	std::wstring nameUnicode(FileSystem::PathGetFilenameWithoutExtension(path));
+	std::string nameASCII;
+	nameASCII.assign(nameUnicode.begin(), nameUnicode.end());
+
+	D3D_SHADER_MACRO d3dmacros[16] = {};
+	assert(macros.size() < (_countof(d3dmacros) - 1));
+	for (size_t i=0; i<macros.size(); i++)
+	{
+		d3dmacros[i].Name = macros[i].m_name.c_str();
+		d3dmacros[i].Definition = macros[i].m_definition.c_str();
+	}
+
     DXShaderIncludeInterface includeInterface;
 
 	ComPtr<ID3DBlob> errorMsg;
-	HRESULT hr = D3DCompileFromFile(path.c_str(), nullptr, &includeInterface, entry.c_str(), profile, compileFlags, 0, &shader->m_blob, &errorMsg);
+	HRESULT hr = D3DCompile(&shaderSource[0], shaderSource.size(), nameASCII.c_str(), 
+		d3dmacros, &includeInterface, entry.c_str(), 
+		profile, compileFlags, 0, &shader->m_blob, &errorMsg);
 	if (FAILED(hr))
 	{
 		::OutputDebugStringA((LPCSTR)errorMsg->GetBufferPointer());

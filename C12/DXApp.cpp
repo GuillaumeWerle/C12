@@ -273,25 +273,24 @@ void DXApp::Render()
 		m_renderer->m_streamColor->GetSRV(),
 	};
 
-	DXUploadContext hh = rc->AllocFromUploadHeap(sizeof(colors));
-	memcpy(hh.CPU, colors, sizeof(colors));
-	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-	desc.Format = DXGI_FORMAT_UNKNOWN;
-	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	desc.Buffer.FirstElement = 0;
-	desc.Buffer.NumElements = _countof(colors);
-	desc.Buffer.StructureByteStride = sizeof(XMFLOAT4);
-	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	DXDescriptorHandle hsrv = rc->m_resource->GetCBVSRVUAVHeap()->Alloc(1);
-	DX::Device->CreateShaderResourceView(hh.Resource, &desc,  hsrv.CPU);
+	//DXUploadContext hh = rc->AllocFromUploadHeap(sizeof(colors));
+	//memcpy(hh.CPU, colors, sizeof(colors));
+	//D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+	//desc.Format = DXGI_FORMAT_UNKNOWN;
+	//desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	//desc.Buffer.FirstElement = 0;
+	//desc.Buffer.NumElements = _countof(colors);
+	//desc.Buffer.StructureByteStride = sizeof(XMFLOAT4);
+	//desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	//desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//DXDescriptorHandle hsrv = rc->m_resource->GetCBVSRVUAVHeap()->Alloc(1);
+	//DX::Device->CreateShaderResourceView(hh.Resource, &desc,  hsrv.CPU);
 	//vertexStreams[2] = hsrv;
 
 	//D3D12_SHADER_RESOURCE_VIEW_DESC
 	//DX::Device->createv
 
 	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
-
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 //	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);

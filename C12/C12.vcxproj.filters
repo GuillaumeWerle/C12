@@ -26,8 +26,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="data\shaders\basic.hlsl">
       <Filter>Shaders</Filter>
     </ClInclude>
@@ -115,6 +113,13 @@
     <ClInclude Include="MasterRenderThread.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="FileSystem.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXMacro.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -179,9 +184,6 @@
     <ClCompile Include="DXUploader.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
     <ClCompile Include="String.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -197,6 +199,10 @@
     <ClCompile Include="MasterRenderThread.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="DXMacro.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

@@ -53,8 +53,8 @@ void DXRenderer::Init()
 
 	DXShader vs, ps;
 	DXShaderCompiler compiler;
-	compiler.Compile(vs, L"data\\shaders\\basic.hlsl", DXShaderType::VS, "VSMain");
-	compiler.Compile(ps, L"data\\shaders\\basic.hlsl", DXShaderType::PS, "PSMain");
+	compiler.Compile(vs, L"data\\shaders\\basic.hlsl", DXShaderType::VS, "VSMain", std::vector<DXMacro>());
+	compiler.Compile(ps, L"data\\shaders\\basic.hlsl", DXShaderType::PS, "PSMain", std::vector<DXMacro>());
 
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};

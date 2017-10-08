@@ -39,7 +39,7 @@ public:
 
 		void InitInternal(const std::wstring & filename)
 		{
-			bool success = FileSystem::ms_instance->Find(m_str, filename);
+			bool success = FileSystem::ms_instance->Find(m_str, PathGetFilename(filename));
 			if (success == false)
 				m_str = L"";
 		}
