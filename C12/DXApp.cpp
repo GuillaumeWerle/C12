@@ -10,6 +10,7 @@
 #include "DXBuffer.h"
 #include "DXTexture2D.h"
 #include "DXStructuredBuffer.h"
+#include "DXDepthStencil.h"
 #include "Timer.h"
 #include "DXRenderContext.h"
 #include "MasterRenderThread.h"
@@ -43,6 +44,7 @@ DXApp::~DXApp()
 	delete DX::Uploader;
 
 	delete m_timer;
+	delete m_depthStencil;
 	delete m_texture;
 	delete m_renderer;
 
@@ -151,10 +153,11 @@ void DXApp::Init(HWND hWnd)
 		rc->Init();
 	}
 
-	{
-		m_texture = new DXTexture2D;
-		m_texture->LoadDDS(FileSystem::Path(L"diffuse.dds"));
-	}
+	m_texture = new DXTexture2D;
+	m_texture->LoadDDS(FileSystem::Path(L"diffuse.dds"));
+
+	m_depthStencil = new DXDepthStencil;
+	m_depthStencil->Create(m_width, m_height);
 
 	m_masterRenderThread = new MasterRenderThread(this);
 	m_masterRenderThread->StartThread();
@@ -235,7 +238,8 @@ void DXApp::Render()
 
 	DXDescriptorHandle & swapChainRTV = m_swapChainRTVs[m_frameIndex];
 	rc->ClearRTV(swapChainRTV, XMFLOAT4(0.2f, 0.3f, 0.7f, 1.0f));
-	rc->SetRenderTarget(swapChainRTV);
+	rc->GetCommandList()->ClearDepthStencilView(m_depthStencil->GetDSV().CPU, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	rc->SetRenderTarget(swapChainRTV, m_depthStencil->GetDSV());
 	CD3DX12_VIEWPORT viewport(0.0f, 0.0f, (float)m_width, (float)m_height);
 	CD3DX12_RECT scissorRect(0, 0, m_width, m_height);
 	rc->SetViewport(viewport);
@@ -281,9 +285,10 @@ void DXApp::Render()
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	DXDescriptorHandle hsrv = rc->m_resource->GetCBVSRVUAVHeap()->Alloc(1);
 	DX::Device->CreateShaderResourceView(hh.Resource, &desc,  hsrv.CPU);
-	vertexStreams[2] = hsrv;
+	//vertexStreams[2] = hsrv;
 
-	
+	//D3D12_SHADER_RESOURCE_VIEW_DESC
+	//DX::Device->createv
 
 	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
 

@@ -20,8 +20,8 @@ public:
 	void Execute(ComPtr<ID3D12CommandQueue> & queue);
 	void Shutdown(ComPtr<ID3D12CommandQueue> & queue);
 
-	void ClearRTV(DXDescriptorHandle rtv, XMFLOAT4 color);
-	void SetRenderTarget(DXDescriptorHandle rtv);
+	void ClearRTV(const DXDescriptorHandle & rtv, XMFLOAT4 color);
+	void SetRenderTarget(const DXDescriptorHandle & rtv, const DXDescriptorHandle & dsv);
 	void SetViewport(const CD3DX12_VIEWPORT & viewport);
 	void SetScissorRect(const CD3DX12_RECT & rect);
 	void SetScissorRects(const CD3DX12_RECT * rects, u32 count);

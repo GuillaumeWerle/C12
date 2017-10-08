@@ -41,3 +41,22 @@ public:
 	void Release();
 };
 
+class DXDSV : public DXDescriptorHandle
+{
+public:
+
+	DXDSV()
+	{
+		CPU.ptr = 0;
+		GPU.ptr = 0;
+	}
+
+	~DXDSV()
+	{
+		Release();
+	}
+
+	void Create(ID3D12Resource * resource);
+	void Release();
+};
+

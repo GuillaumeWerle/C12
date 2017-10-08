@@ -8,78 +8,195 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{114ba8e3-916a-42dc-b876-95df1d49194f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DX">
+      <UniqueIdentifier>{dc3a173c-c0fd-4b10-8c7b-c8dfed3e67c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{9d63e578-09f1-4939-b983-c737be800df4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{02dcf616-c189-4690-823a-44da09be5522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C12.h" />
-    <ClInclude Include="DXApp.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="DXRenderer.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="DXDescriptorHeap.h" />
-    <ClInclude Include="DXFence.h" />
-    <ClInclude Include="DXShaderCompiler.h" />
-    <ClInclude Include="DXShader.h" />
-    <ClInclude Include="DXBuffer.h" />
-    <ClInclude Include="DXHelpers.h" />
-    <ClInclude Include="DXResourceContext.h" />
-    <ClInclude Include="DXTexture2D.h" />
-    <ClInclude Include="DXDescriptorHeapLinear.h" />
-    <ClInclude Include="DXDescriptorPool.h" />
-    <ClInclude Include="DX.h" />
-    <ClInclude Include="DXDescriptorHandle.h" />
-    <ClInclude Include="Utils.h" />
-    <ClInclude Include="DXRootSignature.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="DXRenderContext.h" />
-    <ClInclude Include="DXUploadable.h" />
-    <ClInclude Include="DXUploader.h" />
-    <ClInclude Include="Thread.h" />
-    <ClInclude Include="MasterRenderThread.h" />
-    <ClInclude Include="DXStructuredBuffer.h" />
     <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="String.h" />
     <ClInclude Include="data\shaders\basic.hlsl">
       <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="data\shaders\ShaderCommon.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="DXSRV.h" />
+    <ClInclude Include="DXDepthStencil.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DX.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXApp.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXBuffer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDescriptorHandle.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDescriptorHeap.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDescriptorHeapLinear.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDescriptorPool.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXFence.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXHelpers.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRenderContext.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRenderer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXResourceContext.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRootSignature.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXShader.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXShaderCompiler.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXSRV.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXStructuredBuffer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTexture2D.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUploadable.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUploader.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="String.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterRenderThread.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="DXRenderer.cpp" />
-    <ClCompile Include="DXDescriptorHeap.cpp" />
-    <ClCompile Include="DXFence.cpp" />
-    <ClCompile Include="DXShaderCompiler.cpp" />
-    <ClCompile Include="DXShader.cpp" />
-    <ClCompile Include="DXBuffer.cpp" />
-    <ClCompile Include="DXHelpers.cpp" />
-    <ClCompile Include="DXResourceContext.cpp" />
-    <ClCompile Include="DXTexture2D.cpp" />
-    <ClCompile Include="DXDescriptorHeapLinear.cpp" />
-    <ClCompile Include="DXDescriptorPool.cpp" />
-    <ClCompile Include="DX.cpp" />
-    <ClCompile Include="DXDescriptorHandle.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="DXRootSignature.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="DXRenderContext.cpp" />
-    <ClCompile Include="DXUploader.cpp" />
-    <ClCompile Include="Thread.cpp" />
-    <ClCompile Include="MasterRenderThread.cpp" />
-    <ClCompile Include="DXStructuredBuffer.cpp" />
-    <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="String.cpp" />
-    <ClCompile Include="DXSRV.cpp" />
+    <ClCompile Include="DXDepthStencil.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DX.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXApp.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXBuffer.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDescriptorHandle.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDescriptorHeap.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDescriptorHeapLinear.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDescriptorPool.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXFence.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXHelpers.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRenderContext.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRenderer.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXResourceContext.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRootSignature.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXShader.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXShaderCompiler.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXSRV.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXStructuredBuffer.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXTexture2D.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUploader.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="String.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="MasterRenderThread.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

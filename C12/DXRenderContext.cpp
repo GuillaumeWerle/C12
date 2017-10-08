@@ -58,14 +58,14 @@ void DXRenderContext::Execute(ComPtr<ID3D12CommandQueue> & queue)
 	m_fence->Signal(queue, ++m_fenceValue);
 }
 
-void DXRenderContext::ClearRTV(DXDescriptorHandle rtv, XMFLOAT4 color)
+void DXRenderContext::ClearRTV(const DXDescriptorHandle & rtv, XMFLOAT4 color)
 {
 	m_commandList->ClearRenderTargetView(rtv.CPU, (float*)&color, 0, nullptr);
 }
 
-void DXRenderContext::SetRenderTarget(DXDescriptorHandle rtv)
+void DXRenderContext::SetRenderTarget(const DXDescriptorHandle & rtv, const DXDescriptorHandle & dsv)
 {
-	m_commandList->OMSetRenderTargets(1, &rtv.CPU, FALSE, nullptr);
+	m_commandList->OMSetRenderTargets(1, &rtv.CPU, FALSE, &dsv.CPU);
 }
 
 void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)

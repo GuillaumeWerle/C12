@@ -38,3 +38,26 @@ void DXRTV::Release()
 		CPU.ptr = 0;
 	}
 }
+
+void DXDSV::Create(ID3D12Resource * resource)
+{
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvdesc = {};
+	dsvdesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvdesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvdesc.Texture2D.MipSlice = 0;
+
+	DXDescriptorHandle h = DX::PoolDSV->Alloc();
+	DX::Device->CreateDepthStencilView(resource, &dsvdesc, h.CPU);
+	CPU = h.CPU;
+	GPU = h.GPU;
+}
+
+void DXDSV::Release()
+{
+	if (CPU.ptr)
+	{
+		DXDescriptorHandle h(CPU, GPU);
+		DX::PoolDSV->Free(h);
+		CPU.ptr = 0;
+	}
+}

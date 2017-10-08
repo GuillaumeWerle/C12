@@ -16,10 +16,9 @@ class DXTexture2D : public DXUploadable
 {
 public:
 	const DXSRV & GetSRV() const { return m_srv; }
-	void SetSRV(const DXSRV & val) { m_srv = val; }
 
 	void LoadDDS(const FileSystem::Path & path);
-	void CreateDepthStencil(u32 width, u32 height);
+	//void CreateDepthStencil(u32 width, u32 height);
 
 	DXTexture2D();
 	virtual ~DXTexture2D();

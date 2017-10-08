@@ -16,10 +16,11 @@ DXStructuredBuffer::~DXStructuredBuffer()
 
 void DXStructuredBuffer::Init(u32 count, u32 stride, void * data)
 {
+	assert(data);	// Data can't be null for static init
+
 	m_upload = new DXBuffer;
 	m_upload->Init(D3D12_HEAP_TYPE_UPLOAD, count * stride);
 
-	assert(data);	// Data can't be null for static init
 	m_commited = new DXBuffer;
 	m_commited->Init(D3D12_HEAP_TYPE_DEFAULT, count * stride);
 
@@ -41,14 +42,14 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data)
 	Unmap();
 }
 
-void DXStructuredBuffer::Unmap()
-{
-	DX::Uploader->RequestUpload(this);
-}
-
 u8 * DXStructuredBuffer::Map()
 {
 	return m_upload->Map();
+}
+
+void DXStructuredBuffer::Unmap()
+{
+	DX::Uploader->RequestUpload(this);
 }
 
 void DXStructuredBuffer::Upload(DXRenderContext * rc)

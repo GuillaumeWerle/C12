@@ -13,6 +13,7 @@ class DXTexture2D;
 class Timer;
 class DXRenderContext;
 class MasterRenderThread;
+class DXDepthStencil;
 
 class DXApp
 {
@@ -45,6 +46,7 @@ private:
 	ComPtr<IDXGIFactory4> m_dxgiFactory;
 	ComPtr<ID3D12Device> m_device;
 
+	DXDepthStencil* m_depthStencil = nullptr;
 	ComPtr<IDXGISwapChain3> m_swapChain;
 	ComPtr<ID3D12Resource> m_swapChainBuffers[k_RenderLatency];
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
