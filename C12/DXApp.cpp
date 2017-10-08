@@ -35,6 +35,11 @@ DXApp::~DXApp()
 		delete m_renderContexts[i];
 	}
 
+	DXFence fence;
+	fence.Init(0);
+	fence.Signal(m_commandQueue, 1);
+	fence.Wait(m_commandQueue, 1);
+
 	delete DX::Uploader;
 
 	delete m_timer;
@@ -118,6 +123,7 @@ void DXApp::Init(HWND hWnd)
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
 	CHECK_D3DOK(hr, m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
+	m_commandQueue->SetName(L"DXAppCommandQueue");
 
 	DX::PoolSRVCBVUAV = new DXDescriptorPool;
 	DX::PoolSRVCBVUAV->Init(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 65535, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
@@ -259,7 +265,7 @@ void DXApp::Render()
 
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
+//	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
 	rc->DrawInstanced(3, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.

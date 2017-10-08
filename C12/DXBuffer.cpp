@@ -28,10 +28,13 @@ void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte)
 	desc.Width = sizeInByte;
 	m_desc = desc;
 
+	D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_GENERIC_READ;
+
 	const D3D12_HEAP_PROPERTIES * heapProperties = nullptr;
 	switch (heapType)
 	{
 	case D3D12_HEAP_TYPE_DEFAULT:
+		initialState = D3D12_RESOURCE_STATE_COPY_DEST;
 		heapProperties = DXHelpers::GetDefaultHeapProps();
 		break;
 	case D3D12_HEAP_TYPE_UPLOAD:
@@ -47,7 +50,7 @@ void DXBuffer::Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte)
 	}
 
 	HRESULT hr;
-	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_buffer)));
+	CHECK_D3DOK(hr, DX::Device->CreateCommittedResource(heapProperties, D3D12_HEAP_FLAG_NONE, &desc, initialState, nullptr, IID_PPV_ARGS(&m_buffer)));
 	m_gpuPtr = m_buffer->GetGPUVirtualAddress();
 
 	if (heapType == D3D12_HEAP_TYPE_UPLOAD)

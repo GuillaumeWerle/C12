@@ -50,4 +50,5 @@ u8 * DXStructuredBuffer::Map()
 void DXStructuredBuffer::Upload(DXRenderContext * rc)
 {
 	rc->CopyBufferRegion(m_commited->GetResource(), 0, m_upload->GetResource(), 0, m_totalBytes);
+	rc->ResourceBarrier(m_commited->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 }

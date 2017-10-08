@@ -11,8 +11,8 @@ public:
 	DXRootSignature* m_rootSignature;
 
 	ComPtr<ID3D12PipelineState> m_pso;
-	ComPtr<ID3D12Resource> m_vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+	//ComPtr<ID3D12Resource> m_vertexBuffer;
+	//D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	DXStructuredBuffer* m_streamPos;
 	DXStructuredBuffer* m_streamUV;
 	DXStructuredBuffer* m_streamColor;
