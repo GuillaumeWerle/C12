@@ -253,6 +253,7 @@ void DXApp::Render()
 	{ 
 		m_renderer->m_streamPos->GetSRV(),
 		m_renderer->m_streamUV->GetSRV(),
+		m_renderer->m_streamColor->GetSRV(),
 	};
 	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
 

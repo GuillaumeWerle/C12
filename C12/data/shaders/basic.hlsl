@@ -52,5 +52,5 @@ PSInput VSMain(float4 _position : POSITION, float4 color : COLOR, float2 _uv : T
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	return g_Albedo.Sample(g_Sampler, input.uv * 16);
+	return g_Albedo.Sample(g_Sampler, input.uv * 16) * input.color * 2.0f;
 }
