@@ -11,7 +11,8 @@ public:
 	const DXSRV & GetSRV() const { return m_srv; }
 	void SetSRV(const DXSRV & val) { m_srv = val; }
 
-	void Init(u32 count, u32 stride, void * data = nullptr);
+	void Init(u32 count, u32 stride, void * data);
+
 
 	DXStructuredBuffer();
 	~DXStructuredBuffer();
@@ -29,5 +30,6 @@ private:
 	u64 m_totalBytes = 0;
 
 	u8 * Map();
+	void Unmap();
 };
 

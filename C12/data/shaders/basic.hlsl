@@ -30,29 +30,27 @@ cbuffer cb : register(b0, SPACE_USER_CB)
 }
 
 Buffer<float3> g_VertexPositions : register(t0, SPACE_VERTEX_SRV);
-Buffer<float2> g_VertexUVs: register(t1, SPACE_VERTEX_SRV);
-Buffer<float4> g_VertexColors: register(t2, SPACE_VERTEX_SRV);
+Buffer<float2> g_VertexUVs : register(t1, SPACE_VERTEX_SRV);
+Buffer<float4> g_VertexColors : register(t2, SPACE_VERTEX_SRV);
 
 Texture2D g_Albedo : register(t0);
-SamplerState g_Sampler : register(s0);
 
-
-PSInput VSMain(float4 _position : POSITION, float4 _color : COLOR, float2 _uv : TEXCOORD, uint vertexId : SV_VERTEXID)
+PSInput VSMain(uint vertexId : SV_VERTEXID)
 {
 	PSInput result;
 
-	float4 position = float4(g_VertexPositions[vertexId].xyz, 1.0f);
-	float2 uv = g_VertexUVs[vertexId];
-	float4 color = g_VertexColors[vertexId];
+	float4 position		= float4(g_VertexPositions[vertexId].xyz, 1.0f);
+	float2 uv			= g_VertexUVs[vertexId];
+	float4 color		= g_VertexColors[vertexId];
 
-	result.position = position * float4(3,3,1,1) + g_CB.Offset;
-	result.color = color;
-	result.uv = uv;
+	result.position		= position * float4(3,3,1,1) + g_CB.Offset;
+	result.color		= color * 2.0f;
+	result.uv			= uv * 4.0f;
 
 	return result;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	return g_Albedo.Sample(g_Sampler, input.uv * 16) * input.color * 2.0f;
+	return g_Albedo.Sample(g_Sampler, input.uv) * input.color;
 }

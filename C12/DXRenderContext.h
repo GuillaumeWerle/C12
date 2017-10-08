@@ -2,6 +2,7 @@
 
 #include "DXDescriptorHandle.h"
 #include "DXRootSignature.h"
+#include "DXResourceContext.h"
 
 class DXFence;
 class DXResourceContext;
@@ -11,6 +12,7 @@ class DXRenderContext
 public:
 
 	ID3D12GraphicsCommandList * GetCommandList() { return m_commandList.Get(); }
+
 
 	void Init();
 	void Reset(ComPtr<ID3D12CommandQueue> & queue);
@@ -37,13 +39,15 @@ public:
 	void CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst, UINT DstX, UINT DstY, UINT DstZ, const D3D12_TEXTURE_COPY_LOCATION *pSrc, const D3D12_BOX *pSrcBox);
 	void CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT64 NumBytes);
 
+	DXUploadContext AllocFromUploadHeap(u32 size);
+
 	DXRenderContext();
 	~DXRenderContext();
 
+	DXResourceContext * m_resource = nullptr;
 private:
 	DXFence * m_fence = nullptr;
 	u64 m_fenceValue = 0;
-	DXResourceContext * m_resource = nullptr;
 
 	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;

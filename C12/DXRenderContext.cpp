@@ -88,6 +88,7 @@ void DXRenderContext::SetCB(ERootParamIndex index, void* ptr, u32 size)
 
 void DXRenderContext::SetDescriptorTable(ERootParamIndex index, const DXDescriptorHandle * srvs, u32 count)
 {
+	assert(count);
 	assert(count < m_tmpSrvHandles.size());
 
 	// copy the SRVs to the temporary storage
@@ -164,6 +165,11 @@ void DXRenderContext::CopyTextureRegion(const D3D12_TEXTURE_COPY_LOCATION *pDst,
 void DXRenderContext::CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT64 NumBytes)
 {
 	m_commandList->CopyBufferRegion(pDstBuffer, DstOffset, pSrcBuffer, SrcOffset, NumBytes);
+}
+
+DXUploadContext DXRenderContext::AllocFromUploadHeap(u32 size)
+{
+	return m_resource->AllocFromUploadHeap(size);
 }
 
 void DXRenderContext::SetViewport(const CD3DX12_VIEWPORT & viewport)

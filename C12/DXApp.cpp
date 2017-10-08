@@ -252,6 +252,13 @@ void DXApp::Render()
 	cb.color = XMFLOAT4(0.5f, 0.6f, 0.7f, 1.0f);
 	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
+	float cc = sinf((float)m_timer->GetTimeSinceStart() * 2.5f) * 0.5f + 0.5f;
+	XMFLOAT4 colors[] = {
+		{ 0.0f, 0.0f, 1.0f, 1.0f },
+		{ cc, 0.0f, 0.0f, 1.0f },
+		{ cc, 1.0f, 0.0f, 1.0f } };
+
+
 	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
 	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->GetSRV(), 1);
 
@@ -261,6 +268,23 @@ void DXApp::Render()
 		m_renderer->m_streamUV->GetSRV(),
 		m_renderer->m_streamColor->GetSRV(),
 	};
+
+	DXUploadContext hh = rc->AllocFromUploadHeap(sizeof(colors));
+	memcpy(hh.CPU, colors, sizeof(colors));
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	desc.Buffer.FirstElement = 0;
+	desc.Buffer.NumElements = _countof(colors);
+	desc.Buffer.StructureByteStride = sizeof(XMFLOAT4);
+	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	DXDescriptorHandle hsrv = rc->m_resource->GetCBVSRVUAVHeap()->Alloc(1);
+	DX::Device->CreateShaderResourceView(hh.Resource, &desc,  hsrv.CPU);
+	vertexStreams[2] = hsrv;
+
+	
+
 	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
 
 

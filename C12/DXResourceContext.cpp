@@ -45,6 +45,7 @@ void DXResourceContext::Reset()
 	for (auto & heap : m_descriptorHeaps)
 		heap->Reset();
 
+	m_uploadCurrent.Resource = m_uploadBuffer->GetResource();
 	m_uploadCurrent.CPU = m_uploadBuffer->Map();
 	m_uploadCurrent.GPU = m_uploadBuffer->GetGPUVirtualAddress();
 }

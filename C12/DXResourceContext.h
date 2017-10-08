@@ -7,7 +7,8 @@ class DXBuffer;
 class DXUploadContext
 {
 public:
-	u8 * CPU;
+	ID3D12Resource* Resource;
+	u8* CPU;
 	u64 GPU;
 };
 

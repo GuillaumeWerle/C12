@@ -14,6 +14,8 @@
 
 #define SPACE_INDEX(val)	space##val
 
+SamplerState g_Sampler : register(s0);
+
 #endif
 
 // Register space declaration

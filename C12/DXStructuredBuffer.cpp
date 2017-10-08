@@ -14,11 +14,12 @@ DXStructuredBuffer::~DXStructuredBuffer()
 	delete m_commited;
 }
 
-void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
+void DXStructuredBuffer::Init(u32 count, u32 stride, void * data)
 {
 	m_upload = new DXBuffer;
 	m_upload->Init(D3D12_HEAP_TYPE_UPLOAD, count * stride);
 
+	assert(data);	// Data can't be null for static init
 	m_commited = new DXBuffer;
 	m_commited->Init(D3D12_HEAP_TYPE_DEFAULT, count * stride);
 
@@ -31,15 +32,18 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data /*= nullptr*/)
 	desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	m_srvDesc = desc;
+
 	m_srv.Create(m_commited->GetResource(), &desc);
 
 	DX::Device->GetCopyableFootprints(&m_upload->GetDesc(), 0, 1, 0, &m_placedFootprint, &m_rowCount, &m_pitchInBytes, &m_totalBytes);
 
-	if (data)
-	{
-		memcpy(Map(), data,  count * stride);
-		DX::Uploader->RequestUpload(this);
-	}
+	memcpy(Map(), data,  count * stride);
+	Unmap();
+}
+
+void DXStructuredBuffer::Unmap()
+{
+	DX::Uploader->RequestUpload(this);
 }
 
 u8 * DXStructuredBuffer::Map()
@@ -49,6 +53,7 @@ u8 * DXStructuredBuffer::Map()
 
 void DXStructuredBuffer::Upload(DXRenderContext * rc)
 {
+	assert(m_commited);
 	rc->CopyBufferRegion(m_commited->GetResource(), 0, m_upload->GetResource(), 0, m_totalBytes);
 	rc->ResourceBarrier(m_commited->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 }

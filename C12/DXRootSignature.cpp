@@ -15,6 +15,7 @@ DXRootSignature::~DXRootSignature()
 void DXRootSignature::Create(u32 srvCount)
 {
 	m_srvCount = srvCount;
+	m_srvCount = std::max<u32>(m_srvCount, (u32)EVertexSteam::Count);
 
 	D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = { D3D_ROOT_SIGNATURE_VERSION_1_1 };
 	if (FAILED(DX::Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
