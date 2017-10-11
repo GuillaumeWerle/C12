@@ -32,7 +32,8 @@ public:
 	void SetVertexStreamsSRVTable(DXDescriptorHandle * srvs, u32 count);
 	void SetPipelineState(ID3D12PipelineState * pso);
 	void SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology);
-	void SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
+    void SetVertexBuffer(u32 slot, D3D12_VERTEX_BUFFER_VIEW * vb);
+    void SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb);
 	void DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation);
 	void ResourceBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 	void ResourceBarriers(UINT NumBarriers, D3D12_RESOURCE_BARRIER *pBarriers);

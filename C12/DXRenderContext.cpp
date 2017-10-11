@@ -140,6 +140,11 @@ void DXRenderContext::SetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY topology)
 	m_commandList->IASetPrimitiveTopology(topology);
 }
 
+void DXRenderContext::SetVertexBuffer(u32 slot, D3D12_VERTEX_BUFFER_VIEW * vb)
+{
+    m_commandList->IASetVertexBuffers(slot, 1, vb);
+}
+
 void DXRenderContext::SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER_VIEW * vb)
 {
 	m_commandList->IASetVertexBuffers(start, count, vb);

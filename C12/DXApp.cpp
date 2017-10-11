@@ -183,10 +183,7 @@ void DXApp::InitDebugLayer()
 void DXApp::InitSwapChain(HWND hWnd)
 {
 	HRESULT hr;
-	//m_swapChainBuffersDescriptorHeap = new DXDescriptorHeap;
-	//m_swapChainBuffersDescriptorHeap->Init(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, k_RenderLatency, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
-	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.BufferCount = k_RenderLatency;
 	swapChainDesc.Width = m_width;
@@ -208,8 +205,7 @@ void DXApp::InitSwapChain(HWND hWnd)
 	swapChain.As(&m_swapChain);
 
 	// This sample does not support fullscreen transitions.
-	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, 0));
-//	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
+	CHECK_D3DOK(hr, m_dxgiFactory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));
 
 	// Create a RTV for each frame.
 	for (UINT bufferIndex = 0; bufferIndex < k_RenderLatency; bufferIndex++)
@@ -268,13 +264,11 @@ void DXApp::Render()
 	rc->SetDescriptorTable(ERootParamIndex_SRVTable, &m_texture->GetSRV(), 1);
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    rc->SetVertexBuffers(EVertexSteam_Position, 1, &m_renderer->m_streamPos->GetVBV());
-    rc->SetVertexBuffers(EVertexSteam_UV, 1, &m_renderer->m_streamUV->GetVBV());
-    rc->SetVertexBuffers(EVertexSteam_Color, 1, &colorVBV);
-    //rc->SetVertexBuffers(2, 1, &m_renderer->m_streamColor->GetVBV());
+    rc->SetVertexBuffer(EVertexSteam_Position, &m_renderer->m_streamPos->GetVBV());
+    rc->SetVertexBuffer(EVertexSteam_UV, &m_renderer->m_streamUV->GetVBV());
+    rc->SetVertexBuffer(EVertexSteam_Color, &m_renderer->m_streamColor->GetVBV());
 	rc->DrawInstanced(3, 1, 0, 0);
 
-	// Indicate that the back buffer will now be used to present.
 	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	rc->Close();
 	rc->Execute(m_commandQueue);
