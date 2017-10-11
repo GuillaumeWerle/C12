@@ -11,11 +11,23 @@
 
 #include "ShaderCommon.h"
 
+struct CBPass
+{
+    float4x4 ViewProj;
+};
+
+struct CBObj
+{
+    float4x4 World;
+};
+    
 struct CBStruct
 {
 	float4 Color;
 	float4 Offset;
 };
+
+#ifdef __GPU
 
 struct VSInput
 {
@@ -30,6 +42,16 @@ struct PSInput
 	float2 uv : TEXCOORD;
 	float4 color : COLOR;
 };
+
+cbuffer cbpass : register(ENGINE_CB_REGISTER_PASS, SPACE_ENGINE_CB)
+{
+    CBPass g_Pass;
+}
+
+cbuffer cbobj : register(ENGINE_CB_REGISTER_OBJ, SPACE_ENGINE_CB)
+{
+    CBObj g_Obj;
+}
 
 cbuffer cb : register(b0, SPACE_USER_CB)
 {
@@ -57,3 +79,5 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
 	return g_Albedo.Sample(g_Sampler, input.uv) * input.color;
 }
+
+#endif // __GPU

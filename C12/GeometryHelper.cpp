@@ -4,9 +4,6 @@
 #include "Geometry.h"
 
 #pragma warning( disable : 4305 )	// 'initializing' : truncation from 'double' to 'float'
-
-#if 0
-
 namespace GeometryHelper
 {
     static float *s_addVertRing(float *vertexData, unsigned int subDiv, float sizeX, float posY, float sizeZ)
@@ -38,7 +35,7 @@ namespace GeometryHelper
         return stData;
     }
 
-    Geometry * CreateSphere(RenderInterface * renderInterface, float sizeX, float sizeY, float sizeZ, unsigned int ySubdivisions, unsigned int rSubdivisions, bool facedir /*= true*/)
+    Geometry * CreateSphere(float sizeX, float sizeY, float sizeZ, unsigned int ySubdivisions, unsigned int rSubdivisions, bool facedir /*= true*/)
     {
         unsigned int i, r;
 
@@ -54,13 +51,13 @@ namespace GeometryHelper
         std::vector<float> vposition(vertexCount * 3);
         std::vector<float> vnormal(vertexCount * 3);
         std::vector<float> vtexcoord(vertexCount * 2);
-        std::vector<uint> vindex(indexCount);
+        std::vector<u32> vindex(indexCount);
 
 
         float *vertexData = (float *)&vposition[0];
         float *normalData = (float *)&vnormal[0];
         float *stData = (float *)&vtexcoord[0];
-        uint *indexData = (uint *)&vindex[0];
+        u32 *indexData = (u32 *)&vindex[0];
 
         for (i = 0; i < ySubdivisions; i++)
         {
@@ -74,31 +71,31 @@ namespace GeometryHelper
 
                 if (i == 0)
                 {
-                    *indexData++ = (uint)tl;
-                    *indexData++ = (uint)bl;
-                    *indexData++ = (uint)br;
+                    *indexData++ = (u32)tl;
+                    *indexData++ = (u32)bl;
+                    *indexData++ = (u32)br;
                 }
                 else if (i == (ySubdivisions - 1))
                 {
-                    *indexData++ = (uint)tr;
-                    *indexData++ = (uint)tl;
-                    *indexData++ = (uint)br;
+                    *indexData++ = (u32)tr;
+                    *indexData++ = (u32)tl;
+                    *indexData++ = (u32)br;
                 }
                 else
                 {
-                    *indexData++ = (uint)tr;
-                    *indexData++ = (uint)tl;
-                    *indexData++ = (uint)br;
+                    *indexData++ = (u32)tr;
+                    *indexData++ = (u32)tl;
+                    *indexData++ = (u32)br;
 
-                    *indexData++ = (uint)tl;
-                    *indexData++ = (uint)bl;
-                    *indexData++ = (uint)br;
+                    *indexData++ = (u32)tl;
+                    *indexData++ = (u32)bl;
+                    *indexData++ = (u32)br;
                 }
             }
         }
 
         if (facedir)
-            for (uint f = 0; f < vindex.size(); f += 3)
+            for (u32 f = 0; f < vindex.size(); f += 3)
                 std::swap(vindex[f + 0], vindex[f + 1]);
 
         //PSSG_ASSERT(indexData == ((unsigned short *)indexSource->getData() + indexCount));
@@ -144,20 +141,18 @@ namespace GeometryHelper
             stData = s_addStRing(stData, rSubdivisions, y);
         }
 
-        ID3D11Device * device = renderInterface->GetD3DDevice();
 
         Geometry * geom = new Geometry;
 
-        HRESULT hr;
-        CHECK_OK(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_POSITION, (unsigned int)vposition.size(), sizeof(float), &vposition[0]));
-        CHECK_OK(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, (unsigned int)vnormal.size(), sizeof(float), &vnormal[0]));
-        CHECK_OK(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_TEXCOORD, (unsigned int)vtexcoord.size(), sizeof(float), &vtexcoord[0]));
-        CHECK_OK(hr, geom->CreateIndexBuffer((uint)vindex.size(), &vindex[0]));
+        geom->CreateVertexBuffer(EVertexSteam_Position, (unsigned int)vposition.size()/3, sizeof(float) * 3, &vposition[0]);
+        geom->CreateVertexBuffer(EVertexSteam_Normal, (unsigned int)vnormal.size()/3, sizeof(float) * 3, &vnormal[0]);
+        geom->CreateVertexBuffer(EVertexSteam_UV, (unsigned int)vtexcoord.size()/2, sizeof(float) * 2, &vtexcoord[0]);
+        geom->CreateIndexBuffer((u32)vindex.size(), &vindex[0]);
 
         return geom;
     }
 
-    Geometry * CreateUnitCube(RenderInterface * renderInterface, ECreateUnitCube_CULLMODE cullMode)
+    Geometry * CreateUnitCube(ECreateUnitCube_CULLMODE cullMode)
     {
         unsigned int vertexCount = 8;
         unsigned indexCount = 6 * 2 * 3;
@@ -192,7 +187,7 @@ namespace GeometryHelper
 
         if (cullMode == ECreateUnitCube_CULLMODE_BACKFACE)
         {
-            for (uint i = 0; i < _countof(index); i += 3)
+            for (u32 i = 0; i < _countof(index); i += 3)
             {
                 unsigned short tmp = index[i + 1];
                 index[i + 1] = index[i + 2];
@@ -204,14 +199,13 @@ namespace GeometryHelper
 
         HRESULT hr = 0;
 
-        ID3D11Device * device = renderInterface->GetD3DDevice();
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_POSITION, _countof(cube) / 3, 12, cube));
-        COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer(_countof(index), index));
+        geom->CreateVertexBuffer(EVertexSteam_Position, _countof(cube) / 3, 12, cube);
+        geom->CreateIndexBuffer(_countof(index), index);
 
         return geom;
     }
 
-    Geometry * CreateOctahedron(RenderInterface * renderInterface, float radius)
+    Geometry * CreateOctahedron(float radius)
     {
 
         float p[] =
@@ -236,22 +230,20 @@ namespace GeometryHelper
             1, 5, 4,
         };
 
-        ID3D11Device * device = renderInterface->GetD3DDevice();
         Geometry * geom = new Geometry;
 
-        HRESULT hr = S_OK;
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, _countof(p) / 3, 12, p));
+        geom->CreateVertexBuffer(EVertexSteam_Normal, _countof(p) / 3, 12, p);
 
         for (unsigned int i = 0; i < _countof(p); i++)
             p[i] *= radius;
 
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, _countof(p) / 3, 12, p));
-        COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer(_countof(f), f));
+        geom->CreateVertexBuffer(EVertexSteam_Position, _countof(p) / 3, 12, p);
+        geom->CreateIndexBuffer(_countof(f), f);
 
         return geom;
     }
 
-    Geometry * CreateIcosahedron(RenderInterface * renderInterface, float radius)
+    Geometry * CreateIcosahedron(float radius)
     {
         // icosahedron tesselated (level 2)
         // cut and paste from an .obj file
@@ -395,20 +387,19 @@ namespace GeometryHelper
             std::swap(f[i + 1], f[i + 2]);
         }
 
-        ID3D11Device * device = renderInterface->GetD3DDevice();
         Geometry * geom = new Geometry;
 
-        HRESULT hr = S_OK;
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, _countof(p) / 3, 12, p));
+        geom->CreateVertexBuffer(EVertexSteam_Normal, _countof(p) / 3, 12, p);
 
         for (unsigned int i = 0; i < _countof(p); i++)
             p[i] *= radius;
 
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, _countof(p) / 3, 12, p));
-        COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer(_countof(f), f));
+        geom->CreateVertexBuffer(EVertexSteam_Position, _countof(p) / 3, 12, p);
+        geom->CreateIndexBuffer(_countof(f), f);
 
         return geom;
     }
+
 
     const char * nextline(const char * txt)
     {
@@ -421,9 +412,9 @@ namespace GeometryHelper
 
     struct ObjVertex
     {
-        float3 pos;
-        float3 norm;
-        float2 uv;
+        XMFLOAT3 pos;
+        XMFLOAT3 norm;
+        XMFLOAT2 uv;
 
         bool operator == (const ObjVertex & _Src) const
         {
@@ -438,93 +429,93 @@ namespace GeometryHelper
         }
     };
 
-    COCOON_API Geometry * CreateFromObj(const std::string & objfilename)
-    {
-        SharedPtr<FileBuffer> fb = FileSystem::ms_instance->ReadFile(objfilename);
+    //Geometry * CreateFromObj(const std::string & objfilename)
+    //{
+    //    SharedPtr<FileBuffer> fb = FileSystem::ms_instance->ReadFile(objfilename);
 
-        float x, y, z;
-        uint a[3];
-        uint b[3];
-        uint c[3];
+    //    float x, y, z;
+    //    u32 a[3];
+    //    u32 b[3];
+    //    u32 c[3];
 
-        std::vector<float3> pos;
-        std::vector<float3> normal;
-        std::vector<float2> uv;
-        std::vector<uint> idx;
+    //    std::vector<XMFLOAT3> pos;
+    //    std::vector<XMFLOAT3> normal;
+    //    std::vector<XMFLOAT2> uv;
+    //    std::vector<u32> idx;
 
-        impMapArray<ObjVertex> mesh;
+    //    impMapArray<ObjVertex> mesh;
 
-        const char * txt = (const char *)fb->GetData();
-        for (; txt; txt = nextline(txt))
-        {
-            const char * line = txt;
-            if (StringStartsWith(line, "# "))	// comment
-                continue;
+    //    const char * txt = (const char *)fb->GetData();
+    //    for (; txt; txt = nextline(txt))
+    //    {
+    //        const char * line = txt;
+    //        if (StringStartsWith(line, "# "))	// comment
+    //            continue;
 
-            if (StringStartsWith(line, "v "))	// vertex
-            {
-                sscanf(txt, "v %f %f %f", &x, &y, &z);
-                pos.push_back(float3(x, y, z));
-            }
-            if (StringStartsWith(line, "vn "))	// vertex
-            {
-                sscanf(txt, "vn %f %f %f", &x, &y, &z);
-                normal.push_back(float3(x, y, z));
-            }
-            if (StringStartsWith(line, "vt "))	// vertex
-            {
-                sscanf(txt, "vt %f %f", &x, &y);
-                uv.push_back(float2(x, y));
-            }
-            if (StringStartsWith(line, "f "))	// face
-            {
-                sscanf(txt, "f %d/%d/%d %d/%d/%d %d/%d/%d",
-                    &a[0], &a[1], &a[2],
-                    &b[0], &b[1], &b[2],
-                    &c[0], &c[1], &c[2]);
+    //        if (StringStartsWith(line, "v "))	// vertex
+    //        {
+    //            sscanf(txt, "v %f %f %f", &x, &y, &z);
+    //            pos.push_back(XMFLOAT3(x, y, z));
+    //        }
+    //        if (StringStartsWith(line, "vn "))	// vertex
+    //        {
+    //            sscanf(txt, "vn %f %f %f", &x, &y, &z);
+    //            normal.push_back(XMFLOAT3(x, y, z));
+    //        }
+    //        if (StringStartsWith(line, "vt "))	// vertex
+    //        {
+    //            sscanf(txt, "vt %f %f", &x, &y);
+    //            uv.push_back(XMFLOAT2(x, y));
+    //        }
+    //        if (StringStartsWith(line, "f "))	// face
+    //        {
+    //            sscanf(txt, "f %d/%d/%d %d/%d/%d %d/%d/%d",
+    //                &a[0], &a[1], &a[2],
+    //                &b[0], &b[1], &b[2],
+    //                &c[0], &c[1], &c[2]);
 
-                ObjVertex v;
-                v.pos = pos[a[0] - 1];
-                v.norm = normal[a[2] - 1];
-                v.uv = uv[a[1] - 1];
-                idx.push_back((uint)mesh[v]);
-                v.pos = pos[b[0] - 1];
-                v.norm = normal[b[2] - 1];
-                v.uv = uv[b[1] - 1];
-                idx.push_back((uint)mesh[v]);
-                v.pos = pos[c[0] - 1];
-                v.norm = normal[c[2] - 1];
-                v.uv = uv[c[1] - 1];
-                idx.push_back((uint)mesh[v]);
-            }
-        }
+    //            ObjVertex v;
+    //            v.pos = pos[a[0] - 1];
+    //            v.norm = normal[a[2] - 1];
+    //            v.uv = uv[a[1] - 1];
+    //            idx.push_back((u32)mesh[v]);
+    //            v.pos = pos[b[0] - 1];
+    //            v.norm = normal[b[2] - 1];
+    //            v.uv = uv[b[1] - 1];
+    //            idx.push_back((u32)mesh[v]);
+    //            v.pos = pos[c[0] - 1];
+    //            v.norm = normal[c[2] - 1];
+    //            v.uv = uv[c[1] - 1];
+    //            idx.push_back((u32)mesh[v]);
+    //        }
+    //    }
 
-        pos.clear();
-        normal.clear();
-        uv.clear();
+    //    pos.clear();
+    //    normal.clear();
+    //    uv.clear();
 
-        for (uint i = 0; i < mesh.m_map.size(); i++)
-        {
-            const ObjVertex & vtx = mesh[i];
-            pos.push_back(vtx.pos);
-            normal.push_back(vtx.norm);
-            uv.push_back(vtx.uv);
-        }
+    //    for (u32 i = 0; i < mesh.m_map.size(); i++)
+    //    {
+    //        const ObjVertex & vtx = mesh[i];
+    //        pos.push_back(vtx.pos);
+    //        normal.push_back(vtx.norm);
+    //        uv.push_back(vtx.uv);
+    //    }
 
-        ID3D11Device * device = g_D3DDevice;
-        Geometry * geom = new Geometry;
+    //    ID3D11Device * device = g_D3DDevice;
+    //    Geometry * geom = new Geometry;
 
-        HRESULT hr = S_OK;
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_POSITION, (uint)pos.size(), 12, &pos[0]));
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, sizeof(normal[0]), (uint)normal.size(), &normal[0]));
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_TEXCOORD, sizeof(uv[0]), (uint)uv.size(), &uv[0]));
-        COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer((uint)idx.size(), &idx[0]));
+    //    HRESULT hr = S_OK;
+    //    COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_POSITION, (u32)pos.size(), 12, &pos[0]));
+    //    COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, sizeof(normal[0]), (u32)normal.size(), &normal[0]));
+    //    COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_TEXCOORD, sizeof(uv[0]), (u32)uv.size(), &uv[0]));
+    //    COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer((u32)idx.size(), &idx[0]));
 
-        return geom;
+    //    return geom;
 
-    }
+    //}
 
-    Geometry * CreateUnitCubeWithNormalAndTexcoords(RenderInterface * renderInterface)
+    Geometry * CreateUnitCubeWithNormalAndTexcoords()
     {
 
         float pos[] =
@@ -627,19 +618,14 @@ namespace GeometryHelper
             21, 20, 23,
         };
 
-        ID3D11Device * device = renderInterface->GetD3DDevice();
         Geometry * geom = new Geometry;
 
-        HRESULT hr = S_OK;
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_POSITION, _countof(pos) / 3, 12, pos));
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_NORMAL, _countof(norm) / 3, 12, norm));
-        COCOON_OK_NO_RETURN(hr, geom->CreateVertexBuffer(device, EShaderInputSlot_TEXCOORD, _countof(uv) / 2, 8, uv));
-        COCOON_OK_NO_RETURN(hr, geom->CreateIndexBuffer(_countof(faces), faces));
+        geom->CreateVertexBuffer(EVertexSteam_Position, _countof(pos) / 3, 12, pos);
+        geom->CreateVertexBuffer(EVertexSteam_Normal, _countof(norm) / 3, 12, norm);
+        geom->CreateVertexBuffer(EVertexSteam_UV, _countof(uv) / 2, 8, uv);
+        geom->CreateIndexBuffer(_countof(faces), faces);
 
         return geom;
     }
 
 }
-
-
-#endif // 0

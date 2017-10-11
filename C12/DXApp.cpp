@@ -15,6 +15,7 @@
 #include "DXRenderContext.h"
 #include "MasterRenderThread.h"
 #include "FileSystem.h"
+#include "Geometry.h"
 
 DXApp* DXApp::ms_instance = nullptr;
 

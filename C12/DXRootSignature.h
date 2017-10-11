@@ -10,14 +10,6 @@ enum ERootParamIndex
     ERootParamIndex_Count
 };
 
-enum EVertexSteam
-{
-    EVertexSteam_Position,
-    EVertexSteam_UV,
-    EVertexSteam_Color,
-
-    EVertexSteam_Count
-};
 
 class DXRootSignature
 {

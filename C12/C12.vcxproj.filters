@@ -17,6 +17,9 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{02dcf616-c189-4690-823a-44da09be5522}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{f6945b3c-bc64-4d2d-9961-8bcc0038f76d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -126,6 +129,7 @@
     <ClInclude Include="GeometryHelper.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -215,6 +219,7 @@
     <ClCompile Include="GeometryHelper.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

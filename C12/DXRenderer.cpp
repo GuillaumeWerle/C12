@@ -6,6 +6,8 @@
 #include "DXShaderCompiler.h"
 #include "DXRootSignature.h"
 #include "DXBuffer.h"
+#include "Geometry.h"
+#include "GeometryHelper.h"
 
 DXRenderer::DXRenderer()
 {
@@ -14,10 +16,12 @@ DXRenderer::DXRenderer()
 	m_streamUV = nullptr;
 	m_streamColor = nullptr;
     m_indexBuffer = nullptr;
+    m_geometry = nullptr;
 }
 
 DXRenderer::~DXRenderer()
 {
+    delete m_geometry;
     delete m_indexBuffer;
 	delete m_streamColor;
 	delete m_streamUV;
@@ -65,9 +69,10 @@ void DXRenderer::Init()
     // Define the vertex input layout.
     D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, EVertexSteam_Position, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, EVertexSteam_Normal, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, EVertexSteam_UV, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, EVertexSteam_Color, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
     };
 
 	// Describe and create the graphics pipeline state object (PSO).
@@ -86,6 +91,8 @@ void DXRenderer::Init()
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	CHECK_D3DOK(hr, DX::Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pso)));
+
+    m_geometry = GeometryHelper::CreateUnitCubeWithNormalAndTexcoords();
 }
 
 void DXRenderer::Render(ComPtr<ID3D12GraphicsCommandList> & commandList)

@@ -176,6 +176,7 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="MasterRenderThread.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Timer.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="MasterRenderThread.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

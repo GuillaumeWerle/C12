@@ -4,6 +4,7 @@
 class DXBufferHeap;
 class DXRootSignature;
 class DXBuffer;
+class Geometry;
 
 class DXRenderer
 {
@@ -17,6 +18,7 @@ public:
 	DXBuffer* m_streamUV;
 	DXBuffer* m_streamColor;
     DXBuffer* m_indexBuffer;
+    Geometry* m_geometry;
 
 	void Init();
 	void Render(ComPtr<ID3D12GraphicsCommandList> & commandList);
