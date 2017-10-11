@@ -17,6 +17,13 @@ struct CBStruct
 	float4 Offset;
 };
 
+struct VSInput
+{
+    float4 position : POSITION;
+    float2 uv : TEXCOORD0;
+    float4 color : COLOR;
+};
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
@@ -35,17 +42,13 @@ Buffer<float4> g_VertexColors : register(t2, SPACE_VERTEX_SRV);
 
 Texture2D g_Albedo : register(t0);
 
-PSInput VSMain(uint vertexId : SV_VERTEXID)
+PSInput VSMain(VSInput IN)
 {
-	PSInput result;
+    PSInput result;
 
-	float4 position		= float4(g_VertexPositions[vertexId].xyz, 1.0f);
-	float2 uv			= g_VertexUVs[vertexId];
-	float4 color		= g_VertexColors[vertexId];
-
-	result.position		= position * float4(3,3,1,1) + g_CB.Offset;
-	result.color		= color * 2.0f;
-	result.uv			= uv * 4.0f;
+	result.position		= IN.position * float4(3,3,1,1) + g_CB.Offset;
+	result.color		= IN.color * 2.0f;
+	result.uv			= IN.uv * 4.0f;
 
 	return result;
 }

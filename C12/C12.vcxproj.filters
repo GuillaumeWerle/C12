@@ -80,9 +80,6 @@
     <ClInclude Include="DXSRV.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXStructuredBuffer.h">
-      <Filter>DX</Filter>
-    </ClInclude>
     <ClInclude Include="DXTexture2D.h">
       <Filter>DX</Filter>
     </ClInclude>
@@ -118,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="DXMacro.h" />
     <ClInclude Include="DXBufferHeap.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXBuffer.h">
       <Filter>DX</Filter>
     </ClInclude>
   </ItemGroup>
@@ -172,9 +172,6 @@
     <ClCompile Include="DXSRV.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DXStructuredBuffer.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
     <ClCompile Include="DXTexture2D.cpp">
       <Filter>DX</Filter>
     </ClCompile>
@@ -201,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="DXMacro.cpp" />
     <ClCompile Include="DXBufferHeap.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXBuffer.cpp">
       <Filter>DX</Filter>
     </ClCompile>
   </ItemGroup>

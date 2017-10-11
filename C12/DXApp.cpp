@@ -9,7 +9,7 @@
 #include "DXRenderer.h"
 #include "DXBufferHeap.h"
 #include "DXTexture2D.h"
-#include "DXStructuredBuffer.h"
+#include "DXBuffer.h"
 #include "DXDepthStencil.h"
 #include "Timer.h"
 #include "DXRenderContext.h"
@@ -262,38 +262,16 @@ void DXApp::Render()
 		{ cc, 0.0f, 0.0f, 1.0f },
 		{ cc, 1.0f, 0.0f, 1.0f } };
 
+    D3D12_VERTEX_BUFFER_VIEW colorVBV = rc->AllocVBFromUploadHeap(colors, sizeof(colors), sizeof(colors[0]));
 
-	rc->SetCB(ERootParamIndex::CBGlobal, &cb, sizeof(cb));
-	rc->SetDescriptorTable(ERootParamIndex::SRVTable, &m_texture->GetSRV(), 1);
-
-	DXDescriptorHandle vertexStreams[] = 
-	{ 
-		m_renderer->m_streamPos->GetSRV(),
-		m_renderer->m_streamUV->GetSRV(),
-		m_renderer->m_streamColor->GetSRV(),
-	};
-
-	//DXUploadContext hh = rc->AllocFromUploadHeap(sizeof(colors));
-	//memcpy(hh.CPU, colors, sizeof(colors));
-	//D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-	//desc.Format = DXGI_FORMAT_UNKNOWN;
-	//desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	//desc.Buffer.FirstElement = 0;
-	//desc.Buffer.NumElements = _countof(colors);
-	//desc.Buffer.StructureByteStride = sizeof(XMFLOAT4);
-	//desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	//desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//DXDescriptorHandle hsrv = rc->m_resource->GetCBVSRVUAVHeap()->Alloc(1);
-	//DX::Device->CreateShaderResourceView(hh.Resource, &desc,  hsrv.CPU);
-	//vertexStreams[2] = hsrv;
-
-	//D3D12_SHADER_RESOURCE_VIEW_DESC
-	//DX::Device->createv
-
-	rc->SetDescriptorTable(ERootParamIndex::SRVVertexStreamsTable, vertexStreams, _countof(vertexStreams));
+	rc->SetCB(ERootParamIndex_CBGlobal, &cb, sizeof(cb));
+	rc->SetDescriptorTable(ERootParamIndex_SRVTable, &m_texture->GetSRV(), 1);
 
 	rc->SetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//	rc->SetVertexBuffers(0, 1, &m_renderer->m_vertexBufferView);
+    rc->SetVertexBuffers(EVertexSteam_Position, 1, &m_renderer->m_streamPos->GetVBV());
+    rc->SetVertexBuffers(EVertexSteam_UV, 1, &m_renderer->m_streamUV->GetVBV());
+    rc->SetVertexBuffers(EVertexSteam_Color, 1, &colorVBV);
+    //rc->SetVertexBuffers(2, 1, &m_renderer->m_streamColor->GetVBV());
 	rc->DrawInstanced(3, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.

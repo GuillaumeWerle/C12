@@ -40,6 +40,7 @@ public:
 	void CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOffset, ID3D12Resource *pSrcBuffer, UINT64 SrcOffset, UINT64 NumBytes);
 
 	DXUploadContext AllocFromUploadHeap(u32 size);
+    D3D12_VERTEX_BUFFER_VIEW AllocVBFromUploadHeap(void * data, u32 size, u32 stride);
 
 	DXRenderContext();
 	~DXRenderContext();

@@ -52,7 +52,7 @@ void DXResourceContext::Reset()
 
 DXUploadContext DXResourceContext::AllocFromUploadHeap(u32 size)
 {
-	const u32 alignedSize = AlignOnPowerOfTwo<4>(size);
+	const u32 alignedSize = AlignOnPowerOfTwo<256>(size);
 	DXUploadContext ctx = m_uploadCurrent;
 	m_uploadCurrent.CPU += alignedSize;
 	m_uploadCurrent.GPU += alignedSize;

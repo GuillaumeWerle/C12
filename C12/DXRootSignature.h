@@ -1,21 +1,22 @@
 #pragma once
 
-enum class ERootParamIndex : std::uint32_t
+enum ERootParamIndex
 {
-	SRVTable,
-	CBGlobal,
-	CBEngineObj,
-	CBEnginePass,
-	SRVVertexStreamsTable,
-	Count
+    ERootParamIndex_SRVTable,
+    ERootParamIndex_CBGlobal,
+    ERootParamIndex_CBEngineObj,
+    ERootParamIndex_CBEnginePass,
+
+    ERootParamIndex_Count
 };
 
-enum class EVertexSteam : std::uint32_t
+enum EVertexSteam
 {
-	Position,
-	UV,
-	Color,
-	Count
+    EVertexSteam_Position,
+    EVertexSteam_UV,
+    EVertexSteam_Color,
+
+    EVertexSteam_Count
 };
 
 class DXRootSignature

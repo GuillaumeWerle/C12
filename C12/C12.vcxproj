@@ -152,6 +152,7 @@
     <ClInclude Include="data\shaders\ShaderCommon.h" />
     <ClInclude Include="DX.h" />
     <ClInclude Include="DXApp.h" />
+    <ClInclude Include="DXBuffer.h" />
     <ClInclude Include="DXBufferHeap.h" />
     <ClInclude Include="DXDepthStencil.h" />
     <ClInclude Include="DXDescriptorHandle.h" />
@@ -181,10 +182,10 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />
-    <ClInclude Include="DXStructuredBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX.cpp" />
+    <ClCompile Include="DXBuffer.cpp" />
     <ClCompile Include="DXBufferHeap.cpp" />
     <ClCompile Include="DXDepthStencil.cpp" />
     <ClCompile Include="DXDescriptorHandle.cpp" />
@@ -217,7 +218,6 @@
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="DXStructuredBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc" />

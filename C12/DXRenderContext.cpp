@@ -48,6 +48,8 @@ void DXRenderContext::Reset(ComPtr<ID3D12CommandQueue> & queue)
 
 void DXRenderContext::Close()
 {
+
+
 	m_commandList->Close();
 }
 
@@ -71,7 +73,7 @@ void DXRenderContext::SetRenderTarget(const DXDescriptorHandle & rtv, const DXDe
 void DXRenderContext::SetGraphicRootSignature(DXRootSignature * rootSignature)
 {
 	m_commandList->SetGraphicsRootSignature(rootSignature->Get());
-	u32 srvTableSize = Max<u32>(rootSignature->GetSRVCount(), (u32)EVertexSteam::Count);
+	u32 srvTableSize = rootSignature->GetSRVCount();
 	m_tmpSrvHandles.resize(srvTableSize);
 	D3D12_CPU_DESCRIPTOR_HANDLE emptyHandle;
 	emptyHandle.ptr = 0;
@@ -98,6 +100,7 @@ void DXRenderContext::SetDescriptorTable(ERootParamIndex index, const DXDescript
 	// fill the rest of the temporary storage if needed
 	for (u32 i = count; i < m_tmpSrvHandles.size(); i++)
 		m_tmpSrvHandles[i] = srvs[0].CPU;
+
 
 	DXDescriptorHandle tableSRV = m_resource->GetCBVSRVUAVHeap()->Alloc((u32)m_tmpSrvHandles.size());
 	u32 destRanges[] = { (u32)m_tmpSrvHandles.size() };
@@ -170,6 +173,19 @@ void DXRenderContext::CopyBufferRegion(ID3D12Resource *pDstBuffer, UINT64 DstOff
 DXUploadContext DXRenderContext::AllocFromUploadHeap(u32 size)
 {
 	return m_resource->AllocFromUploadHeap(size);
+}
+
+D3D12_VERTEX_BUFFER_VIEW DXRenderContext::AllocVBFromUploadHeap(void * data, u32 size, u32 stride)
+{
+    DXUploadContext up = AllocFromUploadHeap(size);
+    memcpy(up.CPU, data, size);
+
+    D3D12_VERTEX_BUFFER_VIEW vbv;
+    vbv.BufferLocation = up.GPU;
+    vbv.SizeInBytes = size;
+    vbv.StrideInBytes = stride;
+
+    return vbv;
 }
 
 void DXRenderContext::SetViewport(const CD3DX12_VIEWPORT & viewport)

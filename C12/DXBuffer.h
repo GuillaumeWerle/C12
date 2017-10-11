@@ -1,21 +1,38 @@
 #pragma once
-class DXBuffer
+#include "DXUploadable.h"
+#include "DXDescriptorHandle.h"
+#include "DXSRV.h"
+
+class DXBufferHeap;
+
+enum EDXBufferUsage
+{
+    EDXBufferUsage_VB,
+    EDXBufferUsage_SRV,
+};
+
+class DXBuffer : public DXUploadable
 {
 public:
-	const D3D12_RESOURCE_DESC & GetDesc() const { return m_desc; }
-	ID3D12Resource * GetResource() { return m_buffer.Get(); }
-	u8 * Map() { assert(m_cpuPtr); return m_cpuPtr; }
-	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return m_gpuPtr; }
+    const DXSRV & GetSRV() const { return m_srv; }
+    D3D12_VERTEX_BUFFER_VIEW & GetVBV() { return m_vbv; }
 
-	void Init(D3D12_HEAP_TYPE heapType, u64 sizeInByte);
+    void Init(u32 count, u32 stride, void * data, EDXBufferUsage usage);
 
-	DXBuffer();
-	~DXBuffer();
+    DXBuffer();
+    ~DXBuffer();
+
+    virtual void Upload(DXRenderContext * rc) override;
 
 private:
-	D3D12_RESOURCE_DESC m_desc = {};
-	ComPtr<ID3D12Resource> m_buffer;
-	u8 * m_cpuPtr = nullptr;
-	D3D12_GPU_VIRTUAL_ADDRESS m_gpuPtr = 0;
+    DXBufferHeap* m_upload = nullptr;
+    DXBufferHeap* m_commited = nullptr;
+    DXSRV m_srv;
+    D3D12_VERTEX_BUFFER_VIEW m_vbv;
+    D3D12_SHADER_RESOURCE_VIEW_DESC m_srvDesc = {};
+    D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_placedFootprint = {};
+    u32 m_rowCount = 0;
+    u64 m_pitchInBytes = 0;
+    u64 m_totalBytes = 0;
 };
 

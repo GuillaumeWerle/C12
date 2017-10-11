@@ -5,7 +5,7 @@
 #include "DXShader.h"
 #include "DXShaderCompiler.h"
 #include "DXRootSignature.h"
-#include "DXStructuredBuffer.h"
+#include "DXBuffer.h"
 
 DXRenderer::DXRenderer()
 {
@@ -39,13 +39,13 @@ void DXRenderer::Init()
 			{ 1.0f, 0.0f, 0.0f, 1.0f }, 
 			{ 0.0f, 1.0f, 0.0f, 1.0f } };
 
-		m_streamPos = new DXStructuredBuffer;
-		m_streamUV = new DXStructuredBuffer;
-		m_streamColor = new DXStructuredBuffer;
+		m_streamPos = new DXBuffer;
+		m_streamUV = new DXBuffer;
+		m_streamColor = new DXBuffer;
 
-		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3), positions);
-		m_streamUV->Init(_countof(uvs), sizeof(XMFLOAT2), uvs);
-		m_streamColor->Init(_countof(colors), sizeof(XMFLOAT4), colors);
+		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3), positions, EDXBufferUsage_VB);
+		m_streamUV->Init(_countof(uvs), sizeof(XMFLOAT2), uvs, EDXBufferUsage_VB);
+		m_streamColor->Init(_countof(colors), sizeof(XMFLOAT4), colors, EDXBufferUsage_VB);
 	}
 
 	//	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
@@ -56,9 +56,17 @@ void DXRenderer::Init()
 	compiler.Compile(vs, L"data\\shaders\\basic.hlsl", DXShaderType::VS, "VSMain", std::vector<DXMacro>());
 	compiler.Compile(ps, L"data\\shaders\\basic.hlsl", DXShaderType::PS, "PSMain", std::vector<DXMacro>());
 
+    // Define the vertex input layout.
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+    };
+
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	//psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+	psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 	psoDesc.pRootSignature = m_rootSignature->Get();
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vs.m_blob.Get());
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(ps.m_blob.Get());
