@@ -267,7 +267,8 @@ void DXApp::Render()
     rc->SetVertexBuffer(EVertexSteam_Position, &m_renderer->m_streamPos->GetVBV());
     rc->SetVertexBuffer(EVertexSteam_UV, &m_renderer->m_streamUV->GetVBV());
     rc->SetVertexBuffer(EVertexSteam_Color, &m_renderer->m_streamColor->GetVBV());
-	rc->DrawInstanced(3, 1, 0, 0);
+    rc->SetIndexBuffer(&m_renderer->m_indexBuffer->GetIBV());
+    rc->DrawIndexedInstanced(3, 1, 0, 0, 0);
 
 	rc->ResourceBarrier(m_swapChainBuffers[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	rc->Close();
@@ -276,5 +277,4 @@ void DXApp::Render()
 	// Present the frame.
 	m_swapChain->Present(1, 0);
 	m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
 }

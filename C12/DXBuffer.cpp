@@ -6,7 +6,9 @@
 
 DXBuffer::DXBuffer()
 {
+    memset(&m_srvDesc, 0, sizeof(m_srvDesc));
     memset(&m_vbv, 0, sizeof(m_vbv));
+    memset(&m_ibv, 0, sizeof(m_ibv));
 }
 
 DXBuffer::~DXBuffer()
@@ -28,7 +30,9 @@ void DXBuffer::Init(u32 count, u32 stride, void * data, EDXBufferUsage usage)
     memcpy(dest, data, count * stride);
     DX::Uploader->RequestUpload(this);
 
-    if (usage == EDXBufferUsage_SRV)
+    switch (usage)
+    {
+    case EDXBufferUsage_SRV:
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
         desc.Format = DXGI_FORMAT_UNKNOWN;
@@ -41,16 +45,23 @@ void DXBuffer::Init(u32 count, u32 stride, void * data, EDXBufferUsage usage)
         m_srvDesc = desc;
         m_srv.Create(m_commited->GetResource(), &desc);
     }
-    else if (usage == EDXBufferUsage_VB)
-    {
+    break;
+    case EDXBufferUsage_VB:
         m_vbv.BufferLocation = m_commited->GetGPUVirtualAddress();
         m_vbv.SizeInBytes = stride * count;
         m_vbv.StrideInBytes = stride;
-    }
-    else
-    {
+        break;
+    case EDXBufferUsage_IB:
+        assert(stride == sizeof(u32));  // only support 32bpp index 
+        m_ibv.BufferLocation = m_commited->GetGPUVirtualAddress();
+        m_ibv.Format = DXGI_FORMAT_R32_UINT;
+        m_ibv.SizeInBytes = count * stride;
+        break;
+    default:
         assert(false);  // not handled
+        break;
     }
+
 }
 
 void DXBuffer::Upload(DXRenderContext * rc)

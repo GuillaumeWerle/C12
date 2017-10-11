@@ -16,6 +16,7 @@ public:
 	DXBuffer* m_streamPos;
 	DXBuffer* m_streamUV;
 	DXBuffer* m_streamColor;
+    DXBuffer* m_indexBuffer;
 
 	void Init();
 	void Render(ComPtr<ID3D12GraphicsCommandList> & commandList);

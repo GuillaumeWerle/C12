@@ -120,6 +120,12 @@
     <ClInclude Include="DXBuffer.h">
       <Filter>DX</Filter>
     </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryHelper.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -202,6 +208,12 @@
     </ClCompile>
     <ClCompile Include="DXBuffer.cpp">
       <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryHelper.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

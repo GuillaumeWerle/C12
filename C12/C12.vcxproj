@@ -173,6 +173,8 @@
     <ClInclude Include="DXUploadable.h" />
     <ClInclude Include="DXUploader.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="MasterRenderThread.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Thread.h" />
@@ -205,6 +207,8 @@
     <ClCompile Include="DXTexture2D.cpp" />
     <ClCompile Include="DXUploader.cpp" />
     <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="MasterRenderThread.cpp" />

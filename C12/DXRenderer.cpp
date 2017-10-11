@@ -13,10 +13,12 @@ DXRenderer::DXRenderer()
 	m_streamPos = nullptr;
 	m_streamUV = nullptr;
 	m_streamColor = nullptr;
+    m_indexBuffer = nullptr;
 }
 
 DXRenderer::~DXRenderer()
 {
+    delete m_indexBuffer;
 	delete m_streamColor;
 	delete m_streamUV;
 	delete m_streamPos;
@@ -46,6 +48,10 @@ void DXRenderer::Init()
 		m_streamPos->Init(_countof(positions), sizeof(XMFLOAT3), positions, EDXBufferUsage_VB);
 		m_streamUV->Init(_countof(uvs), sizeof(XMFLOAT2), uvs, EDXBufferUsage_VB);
 		m_streamColor->Init(_countof(colors), sizeof(XMFLOAT4), colors, EDXBufferUsage_VB);
+
+        u32 ib[] = { 0, 1, 2 };
+        m_indexBuffer = new DXBuffer;
+        m_indexBuffer->Init(_countof(ib), sizeof(u32), ib, EDXBufferUsage_IB);
 	}
 
 	//	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;

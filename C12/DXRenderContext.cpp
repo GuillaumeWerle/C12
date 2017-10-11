@@ -150,6 +150,16 @@ void DXRenderContext::SetVertexBuffers(u32 start, u32 count, D3D12_VERTEX_BUFFER
 	m_commandList->IASetVertexBuffers(start, count, vb);
 }
 
+void DXRenderContext::SetIndexBuffer(D3D12_INDEX_BUFFER_VIEW* ibv)
+{
+    m_commandList->IASetIndexBuffer(ibv);
+}
+
+void DXRenderContext::DrawIndexedInstanced(UINT IndexCountPerInstance, UINT InstanceCount, UINT StartIndexLocation, INT BaseVertexLocation, UINT StartInstanceLocation)
+{
+    m_commandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
+}
+
 void DXRenderContext::DrawInstanced(UINT VertexCountPerInstance, UINT InstanceCount, UINT StartVertexLocation, UINT StartInstanceLocation)
 {
 	m_commandList->DrawInstanced(VertexCountPerInstance, InstanceCount, StartVertexLocation, StartInstanceLocation);
