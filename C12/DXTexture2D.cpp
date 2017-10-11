@@ -3,7 +3,7 @@
 #include "DX.h"
 #include "DXHelpers.h"
 #include "DXRenderContext.h"
-#include "DXBuffer.h"
+#include "DXBufferHeap.h"
 #include "DirectXTex/DirectXTex/DirectXTex.h"
 #include "FileSystem.h"
 
@@ -59,7 +59,7 @@ void DXTexture2D::CreateUploadBuffer()
 	m_rowSizeInBytes.resize(m_desc.MipLevels * m_desc.DepthOrArraySize);
 	DX::Device->GetCopyableFootprints(&m_desc, 0, m_desc.MipLevels * m_desc.DepthOrArraySize, 0, &m_footPrintLayouts[0], &m_numRows[0], &m_rowSizeInBytes[0], &m_footPrintTotalBytes);
 
-	m_uploadBuffer = new DXBuffer;
+	m_uploadBuffer = new DXBufferHeap;
 	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, m_footPrintTotalBytes);
 }
 

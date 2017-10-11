@@ -2,7 +2,7 @@
 
 class DXDescriptorHeap;
 class DXDescriptorHeapLinear;
-class DXBuffer;
+class DXBufferHeap;
 
 class DXUploadContext
 {
@@ -17,7 +17,7 @@ class DXResourceContext
 public:
 
 	std::array<DXDescriptorHeapLinear*, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptorHeaps;
-	DXBuffer * m_uploadBuffer = nullptr;
+	DXBufferHeap * m_uploadBuffer = nullptr;
 	DXUploadContext m_uploadStart;
 	DXUploadContext m_uploadCurrent;
 

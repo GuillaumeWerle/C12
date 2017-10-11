@@ -10,7 +10,7 @@ namespace DirectX
 	class ScratchImage;
 }
 
-class DXBuffer;
+class DXBufferHeap;
 
 class DXTexture2D : public DXUploadable
 {
@@ -29,7 +29,7 @@ private:
 	UINT64 m_footPrintTotalBytes = 0;
 	D3D12_RESOURCE_DESC m_desc;
 	ComPtr<ID3D12Resource> m_resource;
-	DXBuffer * m_uploadBuffer = nullptr;
+	DXBufferHeap * m_uploadBuffer = nullptr;
 	DXSRV m_srv;
 	std::vector<D3D12_PLACED_SUBRESOURCE_FOOTPRINT> m_footPrintLayouts;
 	std::vector<u32> m_numRows;

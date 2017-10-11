@@ -7,7 +7,7 @@
 #include "DXRootSignature.h"
 #include "DXFence.h"
 #include "DXRenderer.h"
-#include "DXBuffer.h"
+#include "DXBufferHeap.h"
 #include "DXTexture2D.h"
 #include "DXStructuredBuffer.h"
 #include "DXDepthStencil.h"

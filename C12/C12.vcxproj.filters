@@ -41,9 +41,6 @@
     <ClInclude Include="DXApp.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXBuffer.h">
-      <Filter>DX</Filter>
-    </ClInclude>
     <ClInclude Include="DXDescriptorHandle.h">
       <Filter>DX</Filter>
     </ClInclude>
@@ -120,6 +117,9 @@
       <Filter>DX</Filter>
     </ClInclude>
     <ClInclude Include="DXMacro.h" />
+    <ClInclude Include="DXBufferHeap.h">
+      <Filter>DX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -131,9 +131,6 @@
       <Filter>DX</Filter>
     </ClCompile>
     <ClCompile Include="DXApp.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXBuffer.cpp">
       <Filter>DX</Filter>
     </ClCompile>
     <ClCompile Include="DXDescriptorHandle.cpp">
@@ -203,6 +200,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="DXMacro.cpp" />
+    <ClCompile Include="DXBufferHeap.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="C12.rc">

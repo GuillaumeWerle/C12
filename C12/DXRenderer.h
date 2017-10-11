@@ -1,7 +1,7 @@
 // 15.08.2017
 #pragma once
 
-class DXBuffer;
+class DXBufferHeap;
 class DXRootSignature;
 class DXStructuredBuffer;
 

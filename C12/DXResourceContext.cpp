@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DXResourceContext.h"
 #include "DXDescriptorHeapLinear.h"
-#include "DXBuffer.h"
+#include "DXBufferHeap.h"
 
 DXResourceContext::DXResourceContext()
 {
@@ -36,7 +36,7 @@ void DXResourceContext::Init()
 		m_descriptorHeaps[i]->Init((D3D12_DESCRIPTOR_HEAP_TYPE)i, heapSizes[i], flags);
 	}
 
-	m_uploadBuffer = new DXBuffer;
+	m_uploadBuffer = new DXBufferHeap;
 	m_uploadBuffer->Init(D3D12_HEAP_TYPE_UPLOAD, 32 * 1024 * 1024);
 }
 

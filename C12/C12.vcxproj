@@ -152,7 +152,7 @@
     <ClInclude Include="data\shaders\ShaderCommon.h" />
     <ClInclude Include="DX.h" />
     <ClInclude Include="DXApp.h" />
-    <ClInclude Include="DXBuffer.h" />
+    <ClInclude Include="DXBufferHeap.h" />
     <ClInclude Include="DXDepthStencil.h" />
     <ClInclude Include="DXDescriptorHandle.h" />
     <ClInclude Include="DXDescriptorHeap.h" />
@@ -185,7 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX.cpp" />
-    <ClCompile Include="DXBuffer.cpp" />
+    <ClCompile Include="DXBufferHeap.cpp" />
     <ClCompile Include="DXDepthStencil.cpp" />
     <ClCompile Include="DXDescriptorHandle.cpp" />
     <ClCompile Include="DXDescriptorHeap.cpp" />

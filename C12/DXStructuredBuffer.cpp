@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DXStructuredBuffer.h"
-#include "DXBuffer.h"
+#include "DXBufferHeap.h"
 #include "DX.h"
 #include "DXRenderContext.h"
 
@@ -18,10 +18,10 @@ void DXStructuredBuffer::Init(u32 count, u32 stride, void * data)
 {
 	assert(data);	// Data can't be null for static init
 
-	m_upload = new DXBuffer;
+	m_upload = new DXBufferHeap;
 	m_upload->Init(D3D12_HEAP_TYPE_UPLOAD, count * stride);
 
-	m_commited = new DXBuffer;
+	m_commited = new DXBufferHeap;
 	m_commited->Init(D3D12_HEAP_TYPE_DEFAULT, count * stride);
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};

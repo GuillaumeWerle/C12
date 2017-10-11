@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DXRenderer.h"
-#include "DXBuffer.h"
+#include "DXBufferHeap.h"
 #include "DX.h"
 #include "DXShader.h"
 #include "DXShaderCompiler.h"
