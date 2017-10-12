@@ -6,9 +6,7 @@
 
 DXBuffer::DXBuffer()
 {
-    memset(&m_srvDesc, 0, sizeof(m_srvDesc));
-    memset(&m_vbv, 0, sizeof(m_vbv));
-    memset(&m_ibv, 0, sizeof(m_ibv));
+    memset(&m_view, 0, sizeof(m_view));
 }
 
 DXBuffer::~DXBuffer()
@@ -19,6 +17,8 @@ DXBuffer::~DXBuffer()
 
 void DXBuffer::Init(u32 count, u32 stride, void * data, EDXBufferUsage usage)
 {
+    m_usage = usage;
+
     m_commited = new DXBufferHeap;
     m_commited->Init(D3D12_HEAP_TYPE_DEFAULT, count * stride);
 
@@ -42,20 +42,19 @@ void DXBuffer::Init(u32 count, u32 stride, void * data, EDXBufferUsage usage)
         desc.Buffer.StructureByteStride = stride;
         desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
         desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        m_srvDesc = desc;
         m_srv.Create(m_commited->GetResource(), &desc);
     }
     break;
     case EDXBufferUsage_VB:
-        m_vbv.BufferLocation = m_commited->GetGPUVirtualAddress();
-        m_vbv.SizeInBytes = stride * count;
-        m_vbv.StrideInBytes = stride;
+        m_view.m_vbv.BufferLocation = m_commited->GetGPUVirtualAddress();
+        m_view.m_vbv.SizeInBytes = stride * count;
+        m_view.m_vbv.StrideInBytes = stride;
         break;
     case EDXBufferUsage_IB:
         assert(stride == sizeof(u32));  // only support 32bpp index 
-        m_ibv.BufferLocation = m_commited->GetGPUVirtualAddress();
-        m_ibv.Format = DXGI_FORMAT_R32_UINT;
-        m_ibv.SizeInBytes = count * stride;
+        m_view.m_ibv.BufferLocation = m_commited->GetGPUVirtualAddress();
+        m_view.m_ibv.Format = DXGI_FORMAT_R32_UINT;
+        m_view.m_ibv.SizeInBytes = count * stride;
         break;
     default:
         assert(false);  // not handled
@@ -70,14 +69,3 @@ void DXBuffer::Upload(DXRenderContext * rc)
     rc->CopyBufferRegion(m_commited->GetResource(), 0, m_upload->GetResource(), 0, m_totalBytes);
     rc->ResourceBarrier(m_commited->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 }
-
-//u8 * DXBuffer::Map()
-//{
-//    return m_upload->Map();
-//}
-//
-//void DXBuffer::Unmap()
-//{
-//    DX::Uploader->RequestUpload(this);
-//}
-

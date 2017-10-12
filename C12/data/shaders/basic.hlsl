@@ -58,10 +58,6 @@ cbuffer cb : register(b0, SPACE_USER_CB)
 	CBStruct g_CB;
 }
 
-Buffer<float3> g_VertexPositions : register(t0, SPACE_VERTEX_SRV);
-Buffer<float2> g_VertexUVs : register(t1, SPACE_VERTEX_SRV);
-Buffer<float4> g_VertexColors : register(t2, SPACE_VERTEX_SRV);
-
 Texture2D g_Albedo : register(t0);
 
 PSInput VSMain(VSInput IN)

@@ -3,6 +3,7 @@
 #include <winerror.h>
 #include "DX.h"
 #include "ShaderCommon.h"
+#include "Geometry.h"
 
 DXRootSignature::DXRootSignature()
 {
@@ -21,7 +22,6 @@ void DXRootSignature::Create(u32 srvCount)
 		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 
 	CD3DX12_DESCRIPTOR_RANGE1 srvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, srvCount, 0);
-	CD3DX12_DESCRIPTOR_RANGE1 vertexSrvRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, EVertexSteam_Count, 0, SPACE_VERTEX_SRV);
 
 	std::array<CD3DX12_ROOT_PARAMETER1, ERootParamIndex_Count> rootParameters;
     rootParameters[ERootParamIndex_SRVTable].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_ALL);
