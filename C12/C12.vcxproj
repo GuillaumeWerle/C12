@@ -144,7 +144,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ResourceCompile Include="C12.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C12.ico" />
+    <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C12.h" />
@@ -177,17 +181,23 @@
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="MasterRenderThread.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="String.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="Thread.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Types.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="data\shaders\basic.hlsl">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="DX.cpp" />
+    <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="DXBuffer.cpp" />
     <ClCompile Include="DXBufferHeap.cpp" />
     <ClCompile Include="DXDepthStencil.cpp" />
@@ -211,31 +221,16 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="DXApp.cpp" />
     <ClCompile Include="MasterRenderThread.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="String.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="C12.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C12.ico" />
-    <Image Include="small.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="data\shaders\basic.hlsl">
-      <FileType>Document</FileType>
-    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

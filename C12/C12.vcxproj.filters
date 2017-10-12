@@ -22,38 +22,83 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ResourceCompile Include="C12.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C12.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="data\shaders\basic.hlsl">
-      <Filter>Shaders</Filter>
-    </ClInclude>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="C12.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="data\shaders\ShaderCommon.h">
       <Filter>Shaders</Filter>
     </ClInclude>
-    <ClInclude Include="DXDepthStencil.h">
+    <ClInclude Include="Math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryHelper.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="DXTexture2D.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DX.h">
+    <ClInclude Include="DXRootSignature.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXResourceContext.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRenderer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXRenderContext.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXBufferHeap.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXBuffer.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXMacro.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXShaderCompiler.h">
       <Filter>DX</Filter>
     </ClInclude>
     <ClInclude Include="DXApp.h">
       <Filter>DX</Filter>
     </ClInclude>
+    <ClInclude Include="DXDepthStencil.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXSRV.h">
+      <Filter>DX</Filter>
+    </ClInclude>
     <ClInclude Include="DXDescriptorHandle.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXDescriptorHeap.h">
+    <ClInclude Include="DXUploadable.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXDescriptorHeapLinear.h">
+    <ClInclude Include="DX.h">
       <Filter>DX</Filter>
     </ClInclude>
     <ClInclude Include="DXDescriptorPool.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUploader.h">
+      <Filter>DX</Filter>
+    </ClInclude>
+    <ClInclude Include="DXDescriptorHeap.h">
       <Filter>DX</Filter>
     </ClInclude>
     <ClInclude Include="DXFence.h">
@@ -62,36 +107,21 @@
     <ClInclude Include="DXHelpers.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXRenderContext.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXRenderer.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXResourceContext.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXRootSignature.h">
+    <ClInclude Include="DXDescriptorHeapLinear.h">
       <Filter>DX</Filter>
     </ClInclude>
     <ClInclude Include="DXShader.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXShaderCompiler.h">
+    <ClInclude Include="C12.h" />
+    <ClInclude Include="d3dx12.h">
       <Filter>DX</Filter>
     </ClInclude>
-    <ClInclude Include="DXSRV.h">
-      <Filter>DX</Filter>
+    <ClInclude Include="MasterRenderThread.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="DXTexture2D.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXUploadable.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXUploader.h">
-      <Filter>DX</Filter>
-    </ClInclude>
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="String.h">
       <Filter>Core</Filter>
     </ClInclude>
@@ -107,43 +137,70 @@
     <ClInclude Include="Utils.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="MasterRenderThread.h">
-      <Filter>Graphics</Filter>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="data\shaders\basic.hlsl">
+      <Filter>Shaders</Filter>
     </ClInclude>
     <ClInclude Include="FileSystem.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXMacro.h" />
-    <ClInclude Include="DXBufferHeap.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="DXBuffer.h">
-      <Filter>DX</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="GeometryHelper.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="DXDepthStencil.cpp">
+    <ClCompile Include="Math.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryHelper.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DXTexture2D.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DX.cpp">
+    <ClCompile Include="DXRootSignature.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXResourceContext.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRenderer.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRenderContext.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXBufferHeap.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXBuffer.cpp">
       <Filter>DX</Filter>
     </ClCompile>
     <ClCompile Include="DXApp.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DXDescriptorHandle.cpp">
+    <ClCompile Include="DXShaderCompiler.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXMacro.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDepthStencil.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXSRV.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXDescriptorPool.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DX.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUploader.cpp">
+      <Filter>DX</Filter>
+    </ClCompile>
+    <ClCompile Include="DXFence.cpp">
       <Filter>DX</Filter>
     </ClCompile>
     <ClCompile Include="DXDescriptorHeap.cpp">
@@ -152,42 +209,20 @@
     <ClCompile Include="DXDescriptorHeapLinear.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DXDescriptorPool.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXFence.cpp">
+    <ClCompile Include="DXDescriptorHandle.cpp">
       <Filter>DX</Filter>
     </ClCompile>
     <ClCompile Include="DXHelpers.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DXRenderContext.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXRenderer.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXResourceContext.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXRootSignature.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
     <ClCompile Include="DXShader.cpp">
       <Filter>DX</Filter>
     </ClCompile>
-    <ClCompile Include="DXShaderCompiler.cpp">
-      <Filter>DX</Filter>
+    <ClCompile Include="MasterRenderThread.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="DXSRV.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXTexture2D.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXUploader.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="String.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -200,38 +235,8 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="MasterRenderThread.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="FileSystem.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="DXMacro.cpp" />
-    <ClCompile Include="DXBufferHeap.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="DXBuffer.cpp">
-      <Filter>DX</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryHelper.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Math.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="C12.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C12.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>
