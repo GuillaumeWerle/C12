@@ -26,7 +26,7 @@ void Geometry::CreateVertexBuffer(u32 slot, u32 count, u32 stride, void * data)
 
 void Geometry::CreateIndexBuffer(u32 count, u32 * data)
 {
-    assert(m_ib);
+    assert(m_ib == nullptr);
     m_ib = new DXBuffer;
     m_ib->Init(count, sizeof(u32), data, EDXBufferUsage_IB);
     m_indexCount = count;

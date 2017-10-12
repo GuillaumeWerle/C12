@@ -16,6 +16,7 @@
 #include "MasterRenderThread.h"
 #include "FileSystem.h"
 #include "Geometry.h"
+#include "basic.hlsl"
 
 DXApp* DXApp::ms_instance = nullptr;
 
@@ -249,9 +250,10 @@ void DXApp::Render()
 		XMFLOAT4 color;
 		XMFLOAT4 offset;
 	};
-	cblocal cb;
-	cb.color = XMFLOAT4(0.5f, 0.6f, 0.7f, 1.0f);
-	cb.offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
+	//cblocal cb;
+    CBStruct cb;
+	cb.Color = XMFLOAT4(0.5f, 0.6f, 0.7f, 1.0f);
+	cb.Offset = XMFLOAT4(0.25f * sinf((float)m_timer->GetTimeSinceStart()), 0, 0, 0);
 
 	float cc = sinf((float)m_timer->GetTimeSinceStart() * 2.5f) * 0.5f + 0.5f;
 	XMFLOAT4 colors[] = {
